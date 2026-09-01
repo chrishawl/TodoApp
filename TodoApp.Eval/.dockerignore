@@ -1,0 +1,7 @@
+**/bin
+**/obj
+results
+worktrees
+.git
+.DS_Store
+tests

@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+if [ ! -s "${CODEX_HOME:-/codex-home}/auth.json" ]; then
+  echo "Codex authentication is missing from ${CODEX_HOME:-/codex-home}/auth.json" >&2
+  exit 2
+fi
+
+find "${CODEX_HOME:-/codex-home}" -mindepth 1 -maxdepth 1 ! -name auth.json -exec rm -rf -- {} +
+set +e
+codex "$@"
+status=$?
+set -e
+find "${CODEX_HOME:-/codex-home}" -mindepth 1 -maxdepth 1 ! -name auth.json -exec rm -rf -- {} +
+exit "$status"

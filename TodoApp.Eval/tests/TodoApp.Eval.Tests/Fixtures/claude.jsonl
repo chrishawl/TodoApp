@@ -1,0 +1,2 @@
+{"type":"assistant","model":"claude-test","usage":{"input_tokens":12,"cache_read_input_tokens":3,"output_tokens":5},"message":{"content":[{"type":"tool_use","name":"Bash"}]}}
+{"type":"result","result":"Done","usage":{"input_tokens":1,"output_tokens":2}}

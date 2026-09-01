@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://todoapp.eval/review-profiles/agentic-v1/output.schema.json",
+  "title": "TodoApp semantic grader response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["criteria", "findings", "coverageReceipt", "summary", "strengths", "failures", "recommendations"],
+  "properties": {
+    "criteria": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/criterionVerdict" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "coverageReceipt": { "$ref": "#/$defs/coverageReceipt" },
+    "summary": { "type": "string", "minLength": 1 },
+    "strengths": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "failures": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "recommendations": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description"],
+      "properties": {
+        "kind": { "enum": ["source", "command", "mechanical"] },
+        "description": { "type": "string", "minLength": 1 },
+        "file": { "type": ["string", "null"] },
+        "line": { "type": ["integer", "null"], "minimum": 1 },
+        "command": { "type": ["string", "null"] },
+        "mechanicalSignal": { "type": ["string", "null"] }
+      }
+    },
+    "criterionVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["criterionId", "verdict", "rationale", "evidence", "findingIds"],
+      "properties": {
+        "criterionId": { "type": "string", "minLength": 1 },
+        "verdict": { "enum": ["met", "partial", "notMet", "notApplicable"] },
+        "rationale": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidence" } },
+        "findingIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "criterionId", "severity", "trigger", "impact", "file", "line", "evidence"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "criterionId": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["high", "medium", "low"] },
+        "trigger": { "type": "string", "minLength": 1 },
+        "impact": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "line": { "type": "integer", "minimum": 1 },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidence" } }
+      }
+    },
+    "coverageReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesInspected", "pathsInspected"],
+      "properties": {
+        "filesInspected": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "pathsInspected": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  }
+}

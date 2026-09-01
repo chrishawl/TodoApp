@@ -1,0 +1,3 @@
+Implemented the endpoint.
+
+Tests passed: 12.

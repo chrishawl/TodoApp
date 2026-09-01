@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+mkdir -p /codex-home
+if [ ! -s /codex-home/auth.json ]; then
+  install -o eval -g eval -m 600 /seed/auth.json /codex-home/auth.json
+fi
+find /codex-home -mindepth 1 -maxdepth 1 ! -name auth.json -exec rm -rf -- {} +

@@ -1,0 +1,23 @@
+{
+  "id": "todo-search-v1",
+  "baseCommit": "23ce718962f125cccfa25c4adcb7e7a14360d79a",
+  "parentCommit": "307a1eadbbd77a3004c318f2377e4818bc400af6",
+  "expectedExistingTests": {
+    "total": 16,
+    "failed": 0,
+    "skipped": 0
+  },
+  "requiredChecks": [
+    "restore",
+    "analyzer-enabled-build",
+    "existing-tests",
+    "dotnet-format",
+    "git-diff-check",
+    "clean-worktree"
+  ],
+  "baselineDebtPolicy": {
+    "analyzerDiagnostics": "compare-relative-to-baseline",
+    "packageVulnerabilities": "compare-relative-to-baseline",
+    "buildTestsAndFormat": "must-pass-absolutely"
+  }
+}

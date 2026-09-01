@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <AssemblyName>Todo.Api.Tests</AssemblyName>
+    <RootNamespace>TodoApp.Eval.PrivateTests</RootNamespace>
+  </PropertyGroup>
+  <Target Name="ValidateCandidate" BeforeTargets="Restore;Build">
+    <Error Condition="'$(CandidateApiProject)' == ''" Text="CandidateApiProject must point to the candidate Todo.Api.csproj." />
+    <Error Condition="!Exists('$(CandidateApiProject)')" Text="CandidateApiProject does not exist: $(CandidateApiProject)" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.3" PrivateAssets="all" />
+    <ProjectReference Include="$(CandidateApiProject)" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+</Project>

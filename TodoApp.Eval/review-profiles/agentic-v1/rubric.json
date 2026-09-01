@@ -1,0 +1,115 @@
+{
+  "id": "agentic-v1",
+  "version": "1.0.0",
+  "taskProfileId": "todo-search-v1",
+  "semanticPoints": 30,
+  "verdictPoints": {
+    "met": 2,
+    "partial": 1,
+    "notMet": 0
+  },
+  "applicableCriterionIds": [
+    "solution.requested-behavior-complete",
+    "solution.real-entry-point-reachable",
+    "solution.task-constraints-honoured",
+    "solution.untested-boundaries-match-intent",
+    "simplicity.sufficient-design",
+    "simplicity.clear-control-data-flow",
+    "architecture.responsibility-and-conventions",
+    "architecture.contained-dependencies-and-impact",
+    "maintainability.intent-revealing-structure",
+    "maintainability.clear-invariants-errors-duplication",
+    "tests.useful-behavior-through-interfaces",
+    "tests.regression-detecting-boundaries",
+    "reliability.edge-safety",
+    "security.data-protection",
+    "performance.efficiency"
+  ],
+  "criteria": [
+    {
+      "id": "solution.requested-behavior-complete",
+      "attribute": "solutionIntentAndFunctionalFit",
+      "description": "The requested behavior is complete, with affirmative evidence for the public contract rather than an inference from passing checks alone."
+    },
+    {
+      "id": "solution.real-entry-point-reachable",
+      "attribute": "solutionIntentAndFunctionalFit",
+      "description": "The behavior is reachable through the real application entry point and preserves its authorization, binding, and rate-limiting pipeline."
+    },
+    {
+      "id": "solution.task-constraints-honoured",
+      "attribute": "solutionIntentAndFunctionalFit",
+      "description": "The implementation honours the task's explicit constraints and avoids forbidden migrations, dependencies, or contract changes."
+    },
+    {
+      "id": "solution.untested-boundaries-match-intent",
+      "attribute": "solutionIntentAndFunctionalFit",
+      "description": "Important boundaries not established by the compact mechanical evidence still agree with the stated intent."
+    },
+    {
+      "id": "simplicity.sufficient-design",
+      "attribute": "simplicityAndComplexityManagement",
+      "description": "The design is the simplest sufficient solution and does not add ceremony or abstraction without concrete task value."
+    },
+    {
+      "id": "simplicity.clear-control-data-flow",
+      "attribute": "simplicityAndComplexityManagement",
+      "description": "Control and data flow avoid incidental complexity, hidden behavior, and speculative generality."
+    },
+    {
+      "id": "architecture.responsibility-and-conventions",
+      "attribute": "architectureAndChangeLocality",
+      "description": "Responsibilities live in the appropriate module and follow relevant local application and test conventions."
+    },
+    {
+      "id": "architecture.contained-dependencies-and-impact",
+      "attribute": "architectureAndChangeLocality",
+      "description": "Dependencies, coupling, and the impact of future changes are contained to appropriate seams."
+    },
+    {
+      "id": "maintainability.intent-revealing-structure",
+      "attribute": "readabilityAndMaintainability",
+      "description": "Names and structure reveal intent without explanatory noise or requiring avoidable reconstruction by a maintainer."
+    },
+    {
+      "id": "maintainability.clear-invariants-errors-duplication",
+      "attribute": "readabilityAndMaintainability",
+      "description": "Relevant invariants, errors, and duplication are handled clearly enough for safe modification."
+    },
+    {
+      "id": "tests.useful-behavior-through-interfaces",
+      "attribute": "testQualityAndFeedback",
+      "description": "Submitted tests exercise useful behavior through appropriate interfaces and provide meaningful feedback."
+    },
+    {
+      "id": "tests.regression-detecting-boundaries",
+      "attribute": "testQualityAndFeedback",
+      "description": "Negative and boundary assertions would detect plausible regressions while remaining deterministic and readable."
+    },
+    {
+      "id": "reliability.edge-safety",
+      "attribute": "reliabilityAndEdgeSafety",
+      "description": "Relevant invalid states, boundaries, failure behavior, overflow, cancellation, and concurrency risks are handled proportionately."
+    },
+    {
+      "id": "security.data-protection",
+      "attribute": "securityAndDataProtection",
+      "description": "Authentication, authorization, owner isolation, validation, and sensitive-data paths are preserved at every reachable path."
+    },
+    {
+      "id": "performance.efficiency",
+      "attribute": "performanceEfficiency",
+      "description": "Work is bounded and performed in the correct layer without avoidable round trips, full materialization, or algorithmic waste."
+    }
+  ],
+  "riskReminders": [
+    "Every query path must scope rows to the current owner, including administrators.",
+    "An authenticated identity without a database user must remain forbidden.",
+    "SQLite's built-in case folding is not Unicode-complete.",
+    "Filtering must happen before both counting and pagination.",
+    "A page offset calculation must not overflow into an invalid offset.",
+    "Filtering, counting, ordering, and paging should execute server-side and remain bounded.",
+    "The endpoint must inherit the existing todo authorization and rate limiting.",
+    "Submitted tests should falsify owner-filter, ordering, count-before-page, invalid-binding, and case-folding defects."
+  ]
+}

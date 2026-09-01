@@ -1,0 +1,116 @@
+{
+  "id": "todo-search-agentic-v1",
+  "rubricProfileId": "agentic-v1",
+  "selectedConfiguration": {
+    "model": "gpt-5.6-terra",
+    "reasoningEffort": "high"
+  },
+  "comparisonConfiguration": {
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "high"
+  },
+  "cases": [
+    {
+      "id": "no-implementation",
+      "fixture": "todo-search-v1@23ce718:no-implementation-v1",
+      "mustFind": ["solution.requested-behavior-complete", "solution.real-entry-point-reachable"],
+      "mustNotFind": [],
+      "criterionCeilings": {
+        "solution.requested-behavior-complete": "notMet",
+        "solution.real-entry-point-reachable": "notMet",
+        "tests.useful-behavior-through-interfaces": "notMet"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "sound-direct-implementation",
+      "fixture": "todo-search-v1@23ce718:sound-direct-v1",
+      "mustFind": [],
+      "mustNotFind": ["solution.requested-behavior-complete", "security.data-protection", "performance.efficiency", "simplicity.sufficient-design"],
+      "criterionCeilings": {},
+      "criterionFloors": {
+        "solution.requested-behavior-complete": "met",
+        "security.data-protection": "met",
+        "performance.efficiency": "met",
+        "simplicity.sufficient-design": "met"
+      }
+    },
+    {
+      "id": "unicode-sqlite-casefold-defect",
+      "fixture": "todo-search-v1@23ce718:unicode-sqlite-casefold-v1",
+      "mustFind": ["solution.untested-boundaries-match-intent"],
+      "mustNotFind": ["security.data-protection"],
+      "criterionCeilings": {
+        "solution.untested-boundaries-match-intent": "partial"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "cross-user-administrator-leak",
+      "fixture": "todo-search-v1@23ce718:administrator-owner-scope-removed-v1",
+      "mustFind": ["security.data-protection"],
+      "mustNotFind": [],
+      "criterionCeilings": {
+        "security.data-protection": "notMet"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "filter-count-pagination-order-defect",
+      "fixture": "todo-search-v1@23ce718:count-after-page-v1",
+      "mustFind": ["solution.requested-behavior-complete"],
+      "mustNotFind": [],
+      "criterionCeilings": {
+        "solution.requested-behavior-complete": "partial",
+        "performance.efficiency": "partial"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "full-list-materialization",
+      "fixture": "todo-search-v1@23ce718:client-side-unbounded-query-v1",
+      "mustFind": ["performance.efficiency"],
+      "mustNotFind": [],
+      "criterionCeilings": {
+        "performance.efficiency": "notMet"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "weak-tautological-tests",
+      "fixture": "todo-search-v1@23ce718:weak-submitted-tests-v1",
+      "mustFind": ["tests.useful-behavior-through-interfaces", "tests.regression-detecting-boundaries"],
+      "mustNotFind": [],
+      "criterionCeilings": {
+        "tests.useful-behavior-through-interfaces": "partial",
+        "tests.regression-detecting-boundaries": "notMet"
+      },
+      "criterionFloors": {}
+    },
+    {
+      "id": "correct-but-unnecessarily-elaborate",
+      "fixture": "todo-search-v1@23ce718:overengineered-correct-v1",
+      "mustFind": ["simplicity.sufficient-design"],
+      "mustNotFind": ["solution.requested-behavior-complete", "security.data-protection"],
+      "criterionCeilings": {
+        "simplicity.sufficient-design": "partial"
+      },
+      "criterionFloors": {
+        "solution.requested-behavior-complete": "met",
+        "security.data-protection": "met"
+      }
+    },
+    {
+      "id": "benign-unfamiliar-control",
+      "fixture": "todo-search-v1@23ce718:benign-unfamiliar-v1",
+      "mustFind": [],
+      "mustNotFind": ["solution.requested-behavior-complete", "simplicity.sufficient-design", "architecture.responsibility-and-conventions", "security.data-protection", "performance.efficiency"],
+      "criterionCeilings": {},
+      "criterionFloors": {
+        "solution.requested-behavior-complete": "met",
+        "security.data-protection": "met",
+        "performance.efficiency": "met"
+      }
+    }
+  ]
+}

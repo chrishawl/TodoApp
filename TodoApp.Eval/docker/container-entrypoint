@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+mkdir -p "${HOME}" "${DOTNET_CLI_HOME}" "${XDG_DATA_HOME}" "${XDG_CONFIG_HOME}" /nuget/packages
+exec "$@"
