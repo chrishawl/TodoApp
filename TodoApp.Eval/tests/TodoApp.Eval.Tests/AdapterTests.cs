@@ -231,6 +231,27 @@ public sealed class AdapterTests
         Assert.Contains("ALL", arguments);
     }
 
+    [Fact]
+    public void Private_test_asset_fingerprint_ignores_generated_outputs()
+    {
+        using var workspace = SemanticTestData.Workspace();
+        var controllerRoot = Path.Combine(workspace.Path, "bin", "Debug", "net9.0");
+        var privateTests = Path.Combine(controllerRoot, "private-tests");
+        Directory.CreateDirectory(Path.Combine(privateTests, "bin"));
+        Directory.CreateDirectory(Path.Combine(privateTests, "obj"));
+        File.WriteAllText(Path.Combine(privateTests, "SearchAcceptanceTests.cs"), "first");
+
+        var fingerprint = EvaluationAssetFingerprint.PrivateTests(controllerRoot);
+        Assert.NotEqual("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", fingerprint);
+
+        File.WriteAllText(Path.Combine(privateTests, "bin", "generated.dll"), "ignored");
+        File.WriteAllText(Path.Combine(privateTests, "obj", "assets.json"), "ignored");
+        Assert.Equal(fingerprint, EvaluationAssetFingerprint.PrivateTests(controllerRoot));
+
+        File.WriteAllText(Path.Combine(privateTests, "SearchAcceptanceTests.cs"), "changed");
+        Assert.NotEqual(fingerprint, EvaluationAssetFingerprint.PrivateTests(controllerRoot));
+    }
+
     private static string After(IReadOnlyList<string> args, string name) => args[args.ToList().IndexOf(name) + 1];
     private static AgentSpec Codex(string model, string effort = "high") => new(CliProvider.Codex, model, ReasoningEffort: effort);
     private static string Fixture(string name) => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", name));

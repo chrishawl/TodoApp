@@ -99,6 +99,7 @@ internal sealed class DockerEvaluationRuntime : IEvaluationRuntime
         var agentId = await InspectImage(processes, options.AgentImage);
         var evaluatorId = await InspectImage(processes, options.EvaluatorImage);
         var runtime = new DockerEvaluationRuntime(processes, options, runId, agentId, evaluatorId);
+        await runtime.VerifyEvaluatorAssetsAsync();
         await runtime.CreateVolumeAsync(AuthVolume);
         await runtime.CreateVolumeAsync(runtime.nugetVolume);
         await runtime.SeedAuthenticationAsync();
@@ -111,6 +112,19 @@ internal sealed class DockerEvaluationRuntime : IEvaluationRuntime
         var result = await RunEvaluatorAsync(null, null, ["sdk-version"], TimeSpan.FromMinutes(1));
         RequireSuccess(result, "read the evaluator SDK version");
         return result.Stdout.Trim();
+    }
+
+    private async Task VerifyEvaluatorAssetsAsync()
+    {
+        var expected = EvaluationAssetFingerprint.PrivateTests(AppContext.BaseDirectory);
+        var result = await RunEvaluatorAsync(null, null, ["private-tests-fingerprint"], TimeSpan.FromMinutes(1));
+        if (result.ExitCode != 0 || result.TimedOut)
+            throw new HarnessException(
+                $"Evaluator image '{options.EvaluatorImage}' cannot verify its private-test assets. Rebuild the evaluator image before running an evaluation.");
+        var actual = result.Stdout.Trim();
+        if (!string.Equals(expected, actual, StringComparison.Ordinal))
+            throw new HarnessException(
+                $"Evaluator image '{options.EvaluatorImage}' has stale private-test assets. Rebuild the evaluator image before running an evaluation.");
     }
 
     public async Task<EvalWorkspace> CreateWorkspaceAsync(string repository, string target, string commit, string? branch)

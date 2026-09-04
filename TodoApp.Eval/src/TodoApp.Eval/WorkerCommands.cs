@@ -5,6 +5,11 @@ internal static class WorkerCommands
     public static async Task<int> RunAsync(string[] args)
     {
         if (args.Length == 0) throw new HarnessException("Worker command is required.");
+        if (args[0] == "private-tests-fingerprint")
+        {
+            Console.WriteLine(EvaluationAssetFingerprint.PrivateTests(AppContext.BaseDirectory));
+            return 0;
+        }
         if (args[0] == "sdk-version")
         {
             var sdk = await new ProcessRunner().RunAsync(new("dotnet", ["--version"], "/tmp"), TimeSpan.FromMinutes(1));
