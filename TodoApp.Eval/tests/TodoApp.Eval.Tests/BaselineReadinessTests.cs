@@ -31,6 +31,38 @@ public sealed class BaselineReadinessTests
     }
 
     [Fact]
+    public void Analyzer_diagnostic_is_not_ready()
+    {
+        var baseline = CleanBaseline() with
+        {
+            AnalyzerFindings = [new("warning", "CA1000", "File.cs", "Fix the code.")]
+        };
+
+        AssertFailure(baseline, "diagnostic");
+    }
+
+    [Fact]
+    public void Vulnerable_package_is_not_ready()
+    {
+        var baseline = CleanBaseline() with
+        {
+            Vulnerabilities = [new("Package", "1.0.0", "https://example.invalid/advisory", "high")]
+        };
+
+        AssertFailure(baseline, "vulnerable package");
+    }
+
+    [Fact]
+    public void Failed_vulnerability_audit_is_not_ready()
+    {
+        var baseline = WithGate(CleanBaseline(), "noNewVulnerabilities", false);
+
+        AssertFailure(baseline, "Dependency audit");
+        Assert.False(DeterministicEvaluator.IsVulnerabilityAuditClean(
+            new("vulnerabilities", false, 1, false, 1, "vulnerabilities.json"), []));
+    }
+
+    [Fact]
     public void Failed_existing_test_is_not_ready()
     {
         var baseline = CleanBaseline() with { ExistingTests = new(15, 1, 0, 1, true) };
@@ -118,7 +150,8 @@ public sealed class BaselineReadinessTests
         {
             ["build"] = true,
             ["existingTests"] = true,
-            ["format"] = true
+            ["format"] = true,
+            ["noNewVulnerabilities"] = true
         };
         return new([], [], [], [], new(16, 0, 0, 1, true), new(0, 0, 0, 0, false), new(null, null),
             new([], 0, 0, 0, 0, 0, [], [], [], [], [], [], true, false, false),

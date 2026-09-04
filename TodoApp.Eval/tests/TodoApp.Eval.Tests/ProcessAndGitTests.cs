@@ -62,6 +62,19 @@ public sealed class ProcessAndGitTests
             if (Directory.Exists(root)) Directory.Delete(root, recursive: true);
         }
     }
+
+    [Fact]
+    public void Candidate_snapshot_allowlist_excludes_evaluator_and_agent_configuration()
+    {
+        var paths = DockerEvaluationRuntime.CandidateSnapshotPaths;
+
+        Assert.Contains("TodoApp.sln", paths);
+        Assert.Contains("Todo.Api", paths);
+        Assert.Contains("Todo.Api.Tests", paths);
+        Assert.DoesNotContain(paths, path => path.StartsWith("TodoApp.Eval", StringComparison.Ordinal));
+        Assert.DoesNotContain(paths, path => path.StartsWith(".agents", StringComparison.Ordinal));
+        Assert.DoesNotContain(paths, path => path.StartsWith(".codex", StringComparison.Ordinal));
+    }
 }
 
 internal sealed class GitFixture : IDisposable

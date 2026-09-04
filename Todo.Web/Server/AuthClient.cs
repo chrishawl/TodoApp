@@ -1,4 +1,6 @@
-﻿namespace Todo.Web.Server;
+﻿using Todo.Web.Contracts;
+
+namespace Todo.Web.Server;
 
 public class AuthClient(HttpClient client)
 {

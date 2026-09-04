@@ -158,7 +158,7 @@ public class UserApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    class AuthToken
+    private sealed class AuthToken
     {
         [JsonPropertyName("accessToken")]
         public string? Token { get; set; }

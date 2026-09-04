@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+namespace TodoApi;
+
 public class Todo
 {
     public int Id { get; set; }

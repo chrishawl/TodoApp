@@ -44,7 +44,7 @@ internal sealed class TestApplication : WebApplicationFactory<Program>
         builder.ConfigureServices(services =>
         {
             services.AddDbContextFactory<TodoDbContext>();
-            services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
+            services.RemoveAll<DbContextOptions<TodoDbContext>>();
             var options = new DbContextOptionsBuilder<TodoDbContext>().UseSqlite(connection).Options;
             services.AddSingleton(options);
             services.AddSingleton<DbContextOptions>(options);

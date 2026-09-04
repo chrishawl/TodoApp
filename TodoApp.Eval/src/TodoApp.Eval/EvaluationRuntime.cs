@@ -64,6 +64,23 @@ internal sealed class DockerEvaluationRuntime : IEvaluationRuntime
     internal const string MemoryLimit = "6g";
     internal const double CpuLimit = 4;
     internal const int PidsLimit = 1024;
+    internal static IReadOnlyList<string> CandidateSnapshotPaths { get; } =
+    [
+        ".gitignore",
+        "Directory.Build.props",
+        "Directory.Packages.props",
+        "LICENSE",
+        "README.md",
+        "Requests",
+        "Todo.Api.Tests",
+        "Todo.Api",
+        "Todo.Web",
+        "TodoApp.AppHost",
+        "TodoApp.ServiceDefaults",
+        "TodoApp.sln",
+        "global.json",
+        "nuget.config"
+    ];
 
     private readonly ProcessRunner processes;
     private readonly EvalOptions options;
@@ -134,7 +151,9 @@ internal sealed class DockerEvaluationRuntime : IEvaluationRuntime
         var archive = Path.Combine(Path.GetTempPath(), "todoapp-eval-" + Guid.NewGuid().ToString("N") + ".tar");
         try
         {
-            var archived = await processes.RunAsync(new("git", ["archive", "--format=tar", "--output", archive, commit], repository), TimeSpan.FromMinutes(3));
+            var archiveArguments = new List<string> { "archive", "--format=tar", "--output", archive, commit, "--" };
+            archiveArguments.AddRange(CandidateSnapshotPaths);
+            var archived = await processes.RunAsync(new("git", archiveArguments, repository), TimeSpan.FromMinutes(3));
             RequireSuccess(archived, "export the pinned repository snapshot");
             TarFile.ExtractToDirectory(archive, target, overwriteFiles: false);
         }

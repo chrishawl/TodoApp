@@ -2,6 +2,8 @@ namespace TodoApi.Tests;
 
 public class TodoApiTests
 {
+    private static readonly string[] MissingTitleErrors = ["The Title field is required."];
+
     [Fact]
     public async Task GetTodos()
     {
@@ -141,7 +143,7 @@ public class TodoApiTests
 
         Assert.Equal("One or more validation errors occurred.", problemDetails.Title);
         Assert.NotEmpty(problemDetails.Errors);
-        Assert.Equal(new[] { "The Title field is required." }, problemDetails.Errors["Title"]);
+        Assert.Equal(MissingTitleErrors, problemDetails.Errors["Title"]);
     }
 
     [Fact]

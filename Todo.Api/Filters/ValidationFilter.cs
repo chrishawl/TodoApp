@@ -5,7 +5,7 @@ namespace TodoApi;
 
 public static class ValidationFilterExtensions
 {
-    private static readonly ProducesResponseTypeMetadata ValidationErrorResponseMetadata = 
+    private static readonly ProducesResponseTypeMetadata ValidationErrorResponseMetadata =
         new(400, typeof(HttpValidationProblemDetails), ["application/problem+json"]);
 
     public static TBuilder WithParameterValidation<TBuilder>(this TBuilder builder, params Type[] typesToValidate) where TBuilder : IEndpointConventionBuilder

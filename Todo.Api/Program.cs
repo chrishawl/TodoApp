@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
+using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
 

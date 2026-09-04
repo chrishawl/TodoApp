@@ -7,7 +7,7 @@ internal static class DbContextExtensions
         // Remove the existing DbContextOptions
         // we want to override the settings and calling AddDbContext<TContext> again
         // will noop.
-        services.RemoveAll(typeof(DbContextOptions<TContext>));
+        services.RemoveAll<DbContextOptions<TContext>>();
 
         // Add the options as singletons since the IDbContextFactory as a singleton
 

@@ -1,9 +1,11 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.1.1">
+<Project Sdk="Aspire.AppHost.Sdk/13.5.3">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>22f8485f-c345-41fa-9f21-ba96b1e511d1</UserSecretsId>
+    <!-- CI and the evaluation containers intentionally use NuGet-restored orchestration binaries. -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

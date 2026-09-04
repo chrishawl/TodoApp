@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
 
+namespace TodoApi;
+
 public static class OpenApiOptionsExtensions
 {
     public static OpenApiOptions AddBearerTokenAuthentication(this OpenApiOptions options)

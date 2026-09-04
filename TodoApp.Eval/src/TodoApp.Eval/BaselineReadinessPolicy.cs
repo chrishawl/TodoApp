@@ -12,8 +12,17 @@ internal static class BaselineReadinessPolicy
         var failures = new List<string>();
         if (!restorePassed) failures.Add("Dependency restore failed.");
 
-        var buildPassed = baseline is not null && Gate(baseline, "build");
-        if (!buildPassed) failures.Add("Analyzer-enabled build did not pass.");
+        var buildCommandPassed = baseline is not null && Gate(baseline, "build");
+        var analyzersClean = baseline is not null && baseline.AnalyzerFindings.Count == 0;
+        var buildPassed = buildCommandPassed && analyzersClean;
+        if (!buildCommandPassed) failures.Add("Analyzer-enabled build did not pass.");
+        else if (!analyzersClean) failures.Add($"Analyzer-enabled build emitted {baseline!.AnalyzerFindings.Count} diagnostic(s).");
+
+        var vulnerabilityAuditPassed = baseline is not null && Gate(baseline, "noNewVulnerabilities");
+        if (!vulnerabilityAuditPassed)
+            failures.Add("Dependency audit did not pass.");
+        else if (baseline!.Vulnerabilities.Count != 0)
+            failures.Add($"Dependency audit reported {baseline.Vulnerabilities.Count} vulnerable package finding(s).");
 
         var tests = baseline?.ExistingTests ?? new TestSummary(0, 0, 0, 0, false);
         var total = tests.Passed + tests.Failed + tests.Skipped;

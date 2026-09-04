@@ -2,7 +2,7 @@
 
 namespace TodoApi.Tests;
 
-internal class TodoApplication : WebApplicationFactory<Program>
+internal sealed class TodoApplication : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _sqliteConnection = new("Filename=:memory:");
 

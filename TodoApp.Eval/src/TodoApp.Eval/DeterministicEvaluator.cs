@@ -86,7 +86,7 @@ internal sealed class DeterministicEvaluator(ProcessRunner processes, GitWorkspa
             ["privateAcceptanceTests"] = !includePrivateTests || (privateSummary.Discovered && privateSummary.Failed == 0 && acceptance.Values.All(x => x)),
             ["noNewAnalyzerDiagnostics"] = baseline is null || newDiagnostics.Length == 0,
             ["noNewFormatViolations"] = baseline is null || newFormat.Length == 0,
-            ["noNewVulnerabilities"] = baseline is null || newVulnerabilities.Length == 0,
+            ["noNewVulnerabilities"] = IsVulnerabilityAuditClean(vulnerability.Check, newVulnerabilities),
             ["noPackageOrBuildChanges"] = !includePrivateTests || inventory.PackageOrProjectFiles.Count == 0,
             ["noMigrations"] = !includePrivateTests || inventory.Migrations.Count == 0,
             ["noBinaries"] = !includePrivateTests || inventory.BinaryFiles.Count == 0,
@@ -174,6 +174,9 @@ internal sealed class DeterministicEvaluator(ProcessRunner processes, GitWorkspa
             Duration(times?.Attribute("finish")?.Value, times?.Attribute("start")?.Value), Int(counters, "total") > 0);
     }
 
+    internal static bool IsVulnerabilityAuditClean(CheckResult check, IReadOnlyCollection<VulnerabilityFinding> newFindings) =>
+        check.Passed && newFindings.Count == 0;
+
     internal static Dictionary<string, bool> ParseAcceptanceGroups(string path)
     {
         var groups = new Dictionary<string, bool>
@@ -191,8 +194,8 @@ internal sealed class DeterministicEvaluator(ProcessRunner processes, GitWorkspa
             var matching = results.Where(r =>
             {
                 var name = r.Attribute("testName")?.Value ?? "";
-                return name.StartsWith(key + "_", StringComparison.OrdinalIgnoreCase)
-                    || name.Contains("." + key + "_", StringComparison.OrdinalIgnoreCase);
+                var memberName = name[(name.LastIndexOf('.') + 1)..];
+                return memberName.StartsWith(key, StringComparison.OrdinalIgnoreCase);
             }).ToArray();
             groups[key] = matching.Length > 0 && matching.All(r => string.Equals(r.Attribute("outcome")?.Value, "Passed", StringComparison.OrdinalIgnoreCase));
         }

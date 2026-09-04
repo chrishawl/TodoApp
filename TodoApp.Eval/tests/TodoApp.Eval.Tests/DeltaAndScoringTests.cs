@@ -64,10 +64,10 @@ public sealed class DeltaAndScoringTests
             File.WriteAllText(path, """
                 <TestRun>
                   <Results>
-                    <UnitTestResult testName="Namespace.Tests.authenticationIsolation_one" outcome="Passed" />
-                    <UnitTestResult testName="Namespace.Tests.filtering_one" outcome="Passed" />
-                    <UnitTestResult testName="Namespace.Tests.paginationContract_one" outcome="Passed" />
-                    <UnitTestResult testName="Namespace.Tests.validationRegression_one(value: &quot;x&quot;)" outcome="Passed" />
+                    <UnitTestResult testName="Namespace.Tests.AuthenticationIsolationRequiresUser" outcome="Passed" />
+                    <UnitTestResult testName="Namespace.Tests.FilteringMatchesQuery" outcome="Passed" />
+                    <UnitTestResult testName="Namespace.Tests.PaginationContractReturnsPage" outcome="Passed" />
+                    <UnitTestResult testName="Namespace.Tests.ValidationRegressionRejectsValue(value: &quot;x&quot;)" outcome="Passed" />
                   </Results>
                 </TestRun>
                 """);
