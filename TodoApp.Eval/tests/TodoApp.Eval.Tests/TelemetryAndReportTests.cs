@@ -78,19 +78,20 @@ public sealed class TelemetryAndReportTests
 
             Assert.Contains("Deterministic attainment:** acceptance", report);
             Assert.Contains("Semantic quality:** 90.0/100", report);
-            Assert.Contains("it is not converted into another score", report);
-            Assert.Contains("| Implementation | implementation | n/a | high | codex 1.0 |", report);
-            Assert.Contains("| Semantic grader | gpt-5.6-terra | reported-gpt-5.6-terra | high | codex 1.0 |", report);
-            Assert.DoesNotContain("Overall grader", report);
-            Assert.Contains("| Total | n/a | n/a | n/a | n/a |", report);
-            Assert.Contains("| 120 | 25 | 40 | 6 | 160 |", report);
-            Assert.Contains("`agentic-v2` / `profile-hash`", report);
-            Assert.Contains("300s, 8 tool calls, 2 focused test commands", report);
-            Assert.Contains("Unicode case folding remains incomplete.", report);
-            Assert.Contains("Implement unrestricted case-insensitive matching.", report);
+            Assert.Contains("## Decision", report);
             Assert.Contains("requiredBehaviorComplete", report);
             Assert.Contains("functional.contract-completeness is below strong.", report);
-            Assert.Contains("unknown—not zero", report);
+            Assert.Contains("## Semantic review", report);
+            Assert.Contains("The matching todo is omitted.", report);
+            Assert.Contains("add Unicode test", report);
+            Assert.Contains("## Run details", report);
+            Assert.Contains("`agentic-v2` / `profile-hash`", report);
+            Assert.Contains("[semantic-grade.json](semantic-grade.json)", report);
+            Assert.DoesNotContain("Composite", report, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("## Agent telemetry", report);
+            Assert.DoesNotContain("### Criteria", report);
+            Assert.DoesNotContain("### Semantic gates", report);
+            Assert.DoesNotContain("## Coverage receipt", report);
         }
         finally
         {

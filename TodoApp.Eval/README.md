@@ -87,7 +87,7 @@ Every completed result directory retains the evaluation signals needed to audit 
 - analyzer, format, vulnerability, existing-test, private-test, and coverage outputs;
 - acceptance groups and hard gates;
 - the profile-hashed 19-criterion semantic grade, dimension subtotals, semantic gates, typed evidence, findings, and coverage receipt;
-- the evaluator-calculated grade, report, baseline readiness, grader budget/health, image IDs, resource limits, and isolation settings.
+- a concise decision report plus the full semantic grade, deterministic evidence, telemetry, baseline readiness, grader budget/health, image IDs, resource limits, and isolation settings in adjacent JSON artifacts.
 
 The candidate repository remains the extraction artifact when `--cleanup` is omitted. Generated results never contain `auth.json`.
 
