@@ -12,7 +12,7 @@ internal static class TaskDefinition
 
         Add `GET /todos/search` with:
 
-        - `q`: optional title search; trim whitespace, treat empty as no filter, and match case-insensitively.
+        - `q`: optional title search; trim whitespace, treat empty as no filter, and match case-insensitively for Unicode text as well as ASCII.
         - `isComplete`: optional Boolean completion filter.
         - `page`: optional one-based page number, default `1`; reject values below `1`.
         - `pageSize`: optional size, default `20`; reject values outside `1–100`.

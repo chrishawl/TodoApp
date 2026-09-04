@@ -196,6 +196,7 @@ public sealed class SemanticGradingTests
         Assert.DoesNotContain("privateTests", executor.Prompt, StringComparison.Ordinal);
         Assert.DoesNotContain(workspace.Path, executor.Prompt, StringComparison.Ordinal);
         Assert.Contains("\"patch\"", executor.Prompt, StringComparison.Ordinal);
+        Assert.Contains("Unicode text as well as ASCII", executor.Prompt, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -292,7 +293,7 @@ internal static class SemanticTestData
     }
 
     public static GradingCase Candidate(string worktree, ReviewProfile profile, IReadOnlyList<string>? changedFiles = null) => new(
-        "task", "architecture", "diff --git a/source.cs b/source.cs", worktree, "base", new string('a', 64),
+        TaskDefinition.PublicTask, TaskDefinition.ArchitectureBrief, "diff --git a/source.cs b/source.cs", worktree, "base", new string('a', 64),
         changedFiles ?? ["source.cs"],
         new(true, true, new(1, 0, 0, 1, true), true, true, true, true, new(80, 70),
             new(changedFiles ?? ["source.cs"], 1, 0, true, true, true, true, true, true, true)),
