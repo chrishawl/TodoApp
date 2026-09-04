@@ -1,7 +1,7 @@
 {
   "id": "todo-search-v1",
-  "baseCommit": "23ce718962f125cccfa25c4adcb7e7a14360d79a",
-  "parentCommit": "307a1eadbbd77a3004c318f2377e4818bc400af6",
+  "baseCommit": "549a3ece7a6c2f5bcf351bf6c5b08132f534ebc9",
+  "parentCommit": "47d3b9b24861d2834b9b91c2565cef4419cc8684",
   "expectedExistingTests": {
     "total": 16,
     "failed": 0,
@@ -16,8 +16,8 @@
     "clean-worktree"
   ],
   "baselineDebtPolicy": {
-    "analyzerDiagnostics": "compare-relative-to-baseline",
-    "packageVulnerabilities": "compare-relative-to-baseline",
+    "analyzerDiagnostics": "must-pass-absolutely",
+    "packageVulnerabilities": "must-pass-absolutely",
     "buildTestsAndFormat": "must-pass-absolutely"
   }
 }

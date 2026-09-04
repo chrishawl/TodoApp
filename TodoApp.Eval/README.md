@@ -40,7 +40,7 @@ From this directory:
 ```sh
 dotnet run --project src/TodoApp.Eval -- run \
   --repo /Users/chrishawley/dev/TodoApp \
-  --base 23ce718962f125cccfa25c4adcb7e7a14360d79a \
+  --base 549a3ece7a6c2f5bcf351bf6c5b08132f534ebc9 \
   --implementation-cli codex \
   --implementation-model gpt-5.6-terra \
   --implementation-reasoning-effort high \
@@ -56,7 +56,7 @@ Use `baseline` with the same required options to capture a standalone baseline, 
 
 ## Isolation model
 
-Each run exports only the selected Git commit into a fresh repository with one synthetic base commit. The candidate cannot inspect other commits, branches, worktrees, remotes, or the source repository’s `.git` data.
+Each run exports only an allowlist of application files from the selected Git commit into a fresh repository with one synthetic base commit. Evaluator source, private tests, and agent configuration are excluded even when they exist in the pinned commit. The candidate cannot inspect other commits, branches, worktrees, remotes, or the source repository’s `.git` data.
 
 The implementation container receives only:
 
@@ -74,9 +74,9 @@ The agent necessarily has access to its own Codex credential while running. The 
 
 ## Baseline readiness
 
-Before model tokens are spent, the harness restores and evaluates the detached baseline snapshot. A non-incremental analyzer-enabled build, all 16 expected existing tests, `dotnet format --verify-no-changes`, `git diff --check`, and worktree cleanliness must pass absolutely. An unready baseline writes `baseline-readiness.json` and `harness-error.json` and exits 2.
+Before model tokens are spent, the harness restores and evaluates the detached baseline snapshot. A non-incremental analyzer-enabled build with zero diagnostics, a dependency audit with zero vulnerable-package findings, all 16 expected existing tests, `dotnet format --verify-no-changes`, `git diff --check`, and worktree cleanliness must pass absolutely. An unready baseline writes `baseline-readiness.json` and `harness-error.json` and exits 2.
 
-NuGet auditing is disabled only for the format process so advisories cannot masquerade as formatting failures. The dedicated vulnerability command remains enabled, and package advisories and analyzer diagnostics remain baseline-relative.
+NuGet auditing is disabled only for the format process so advisories cannot masquerade as formatting failures. The dedicated vulnerability command remains enabled. Analyzer diagnostics and package advisories must be absent from the baseline; candidate gates reject any newly introduced finding.
 
 ## Signals and artifacts
 
