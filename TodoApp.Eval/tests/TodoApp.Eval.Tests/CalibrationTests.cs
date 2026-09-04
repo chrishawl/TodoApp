@@ -112,7 +112,7 @@ public sealed class CalibrationTests
             "functional.contract-completeness", "functional", 20, level,
             findings?.Select(x => x.Id).ToArray());
         return new(
-            "agentic-v2", "hash", quality, 100, (int)Math.Round(quality * 0.3m), 30,
+            "agentic-v2", "hash", quality, 100,
             [new("functional", "Functional behavior", 30, quality * 0.3m)], [criterion],
             [new("requiredBehaviorComplete", gatesPass, "reason"), new("noCriticalSemanticFinding", gatesPass, "reason")],
             findings ?? [], new(["source.cs"], []), "summary", [], [], []);

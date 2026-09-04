@@ -12,32 +12,32 @@ public sealed class DeltaAndScoringTests
     }
 
     [Fact]
-    public void Score_arithmetic_is_exact_and_hard_gate_takes_precedence()
+    public void Hard_gate_takes_precedence_over_semantic_quality()
     {
         var deterministic = Deterministic(allAcceptance: true, failedGate: "noSecrets");
         var grade = Scoring.Calculate(deterministic, SemanticTestData.Grade(), agentSucceeded: true);
-        Assert.Equal(96, grade.Score); Assert.Equal("FAIL", grade.Status);
+        Assert.Equal("FAIL", grade.Status);
     }
 
     [Fact]
-    public void Semantic_points_are_owned_by_the_scored_grade()
+    public void Semantic_quality_is_independent_from_deterministic_attainment()
     {
-        var semantic = SemanticTestData.Grade(17);
+        var semantic = SemanticTestData.Grade(57m);
 
         var grade = Scoring.Calculate(Deterministic(true), semantic, true);
 
-        Assert.Equal(17, grade.SemanticPoints);
-        Assert.Equal(87, grade.Score);
+        Assert.Equal(50, grade.AcceptancePoints);
+        Assert.Equal(20, grade.EngineeringPoints);
+        Assert.Equal(57m, semantic.QualityScore);
     }
 
     [Fact]
-    public void Semantic_gate_failure_overrides_a_perfect_composite_score()
+    public void Semantic_gate_failure_overrides_a_passing_deterministic_result()
     {
         var semantic = SemanticTestData.Grade(gatesPass: false);
 
         var grade = Scoring.Calculate(Deterministic(true), semantic, true);
 
-        Assert.Equal(100, grade.Score);
         Assert.Equal("FAIL", grade.Status);
         Assert.False(grade.HardGates["requiredBehaviorComplete"]);
         Assert.Contains(grade.Failures, failure => failure.Contains("requiredBehaviorComplete", StringComparison.Ordinal));

@@ -1,8 +1,7 @@
 {
   "id": "agentic-v2",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "semanticQualityPoints": 100,
-  "compositePoints": 30,
   "levels": [
     { "level": "failed", "label": "Failed", "meaning": "Missing, contradicted, unreachable, or harmful." },
     { "level": "weak", "label": "Weak", "meaning": "Substantial deficiencies requiring significant rework." },

@@ -33,10 +33,8 @@ internal static class Scoring
             .Select(x => $"Hard gate failed: {x.Key}.");
         return new(
             status,
-            acceptance + engineering + semantic.CompositePoints,
             acceptance,
             engineering,
-            semantic.CompositePoints,
             gates,
             semantic.Summary,
             semantic.Strengths,
@@ -77,8 +75,8 @@ internal static class ReportWriter
             # TodoApp evaluation: {manifest.RunId}
 
             **Status:** {grade.Status}  
-            **Score:** {grade.Score}/100 (acceptance {grade.AcceptancePoints}/50, engineering {grade.EngineeringPoints}/20, semantic {grade.SemanticPoints}/30)
-            **Semantic quality:** {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore} (contributes {semantic.CompositePoints}/{semantic.MaximumCompositePoints} to the composite)
+            **Deterministic attainment:** acceptance {grade.AcceptancePoints}/50; engineering {grade.EngineeringPoints}/20
+            **Semantic quality:** {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore}
 
             ## Summary
 
@@ -132,7 +130,7 @@ internal static class ReportWriter
             | --- | ---: | --- | ---: | --- | --- | --- |
             {string.Join(Environment.NewLine, rubricRows)}
 
-            Semantic quality: {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore}. Composite contribution: {semantic.CompositePoints}/{semantic.MaximumCompositePoints}. The evaluator calculates both values from criterion weights and effective levels.
+            Semantic quality: {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore}. The evaluator calculates this value from criterion weights and effective levels; it is not converted into another score.
 
             ### Semantic gates
 

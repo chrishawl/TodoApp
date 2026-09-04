@@ -227,10 +227,8 @@ internal sealed record DeterministicResult(
 
 internal sealed record GradeResult(
     string Status,
-    int Score,
     int AcceptancePoints,
     int EngineeringPoints,
-    int SemanticPoints,
     IReadOnlyDictionary<string, bool> HardGates,
     string Narrative,
     IReadOnlyList<string> Strengths,

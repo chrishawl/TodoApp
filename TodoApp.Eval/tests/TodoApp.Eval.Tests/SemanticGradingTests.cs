@@ -11,7 +11,6 @@ public sealed class SemanticGradingTests
 
         Assert.Equal("agentic-v2", profile.Rubric.Id);
         Assert.Equal(100, profile.Rubric.SemanticQualityPoints);
-        Assert.Equal(30, profile.Rubric.CompositePoints);
         Assert.Equal(100, profile.Rubric.Dimensions.Sum(x => x.Weight));
         Assert.Equal(19, profile.Rubric.Criteria.Count);
         Assert.Equal(5, profile.Rubric.Levels.Count);
@@ -95,7 +94,7 @@ public sealed class SemanticGradingTests
     }
 
     [Fact]
-    public void Weighted_arithmetic_and_composite_rounding_are_evaluator_owned()
+    public void Weighted_semantic_arithmetic_is_evaluator_owned()
     {
         using var workspace = SemanticTestData.Workspace();
         var profile = SemanticTestData.Profile();
@@ -105,7 +104,6 @@ public sealed class SemanticGradingTests
             SemanticTestData.Input(profile, _ => SemanticLevel.Strong));
 
         Assert.Equal(75m, grade.QualityScore);
-        Assert.Equal(23, grade.CompositePoints);
         Assert.All(grade.Dimensions, dimension => Assert.Equal(dimension.Weight * 3m / 4m, dimension.EarnedPoints));
         Assert.All(grade.Criteria, criterion => Assert.Equal(criterion.Weight * 3m / 4m, criterion.EarnedPoints));
     }
@@ -256,7 +254,7 @@ public sealed class SemanticGradingTests
 
         var grade = SemanticGradePersistence.Read(path);
 
-        Assert.Equal(23, grade.CompositePoints);
+        Assert.Equal(230m / 3m, grade.QualityScore);
         Assert.Equal(SemanticLevel.AdequateWithGaps, grade.Criteria[0].Level);
     }
 
@@ -324,12 +322,11 @@ internal static class SemanticTestData
         id, criterionId, severity, "A realistic trigger occurs.", "Observable behavior is incorrect.",
         "source.cs", 1, [new(EvidenceKind.Source, "The source shows the behavior.", "source.cs", 1)]);
 
-    public static SemanticGrade Grade(int compositePoints = 30, decimal? qualityScore = null, bool gatesPass = true)
+    public static SemanticGrade Grade(decimal qualityScore = 100m, bool gatesPass = true)
     {
-        var quality = qualityScore ?? compositePoints * 100m / 30m;
         return new(
-            "agentic-v2", "hash", quality, 100, compositePoints, 30,
-            [new("functional", "Functional behavior", 30, quality * 0.3m)], [],
+            "agentic-v2", "hash", qualityScore, 100,
+            [new("functional", "Functional behavior", 30, qualityScore * 0.3m)], [],
             [new("requiredBehaviorComplete", gatesPass, gatesPass ? "complete" : "incomplete"),
              new("noCriticalSemanticFinding", gatesPass, gatesPass ? "clear" : "critical")],
             [], new(["source.cs"], []), "summary", ["strength"], [], ["recommendation"]);

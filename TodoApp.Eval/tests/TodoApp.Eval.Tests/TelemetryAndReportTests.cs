@@ -65,7 +65,7 @@ public sealed class TelemetryAndReportTests
             var finding = new SemanticFinding("F-1", criterion.CriterionId, SemanticFindingSeverity.Medium,
                 "A non-ASCII title is searched with different casing.", "The matching todo is omitted.",
                 "source.cs", 1, [new(EvidenceKind.Source, "source", "source.cs", 1)]);
-            var semantic = new SemanticGrade("agentic-v2", "profile-hash", 90, 100, 27, 30,
+            var semantic = new SemanticGrade("agentic-v2", "profile-hash", 90, 100,
                 [new("functional", "Functional behavior", 30, 20)], [criterion],
                 [new("requiredBehaviorComplete", false, "functional.contract-completeness is below strong."),
                  new("noCriticalSemanticFinding", true, "No high-severity finding.")],
@@ -76,8 +76,9 @@ public sealed class TelemetryAndReportTests
             ReportWriter.Write(path, manifest, runTelemetry, deterministic, semantic, grade);
             var report = File.ReadAllText(path);
 
-            Assert.Contains("semantic 27/30", report);
+            Assert.Contains("Deterministic attainment:** acceptance", report);
             Assert.Contains("Semantic quality:** 90.0/100", report);
+            Assert.Contains("it is not converted into another score", report);
             Assert.Contains("| Implementation | implementation | n/a | high | codex 1.0 |", report);
             Assert.Contains("| Semantic grader | gpt-5.6-terra | reported-gpt-5.6-terra | high | codex 1.0 |", report);
             Assert.DoesNotContain("Overall grader", report);

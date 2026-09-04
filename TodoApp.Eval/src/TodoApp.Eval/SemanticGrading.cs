@@ -25,7 +25,6 @@ internal sealed record RubricProfile(
     string Id,
     string Version,
     int SemanticQualityPoints,
-    int CompositePoints,
     IReadOnlyList<SemanticLevelDefinition> Levels,
     IReadOnlyList<RubricDimension> Dimensions,
     EvidenceRequirements EvidenceRequirements,
@@ -33,9 +32,6 @@ internal sealed record RubricProfile(
 {
     [JsonIgnore]
     public IReadOnlyList<RubricCriterion> Criteria => Dimensions.SelectMany(x => x.Criteria).ToArray();
-
-    [JsonIgnore]
-    public int SemanticPoints => SemanticQualityPoints;
 
     [JsonIgnore]
     public IReadOnlyList<string> ApplicableCriterionIds => Criteria.Select(x => x.Id).ToArray();
@@ -124,7 +120,6 @@ internal sealed record ReviewProfile(
         var rubric = new RubricProfile(
             legacy.Id,
             legacy.Version,
-            legacy.SemanticPoints,
             legacy.SemanticPoints,
             StandardLevels(),
             [new("legacy", "Agentic v1", legacy.SemanticPoints, criteria)],
@@ -462,8 +457,6 @@ internal sealed record SemanticGrade(
     string RubricProfileHash,
     decimal QualityScore,
     int MaximumQualityScore,
-    int CompositePoints,
-    int MaximumCompositePoints,
     IReadOnlyList<SemanticDimensionGrade> Dimensions,
     IReadOnlyList<SemanticCriterionGrade> Criteria,
     IReadOnlyList<SemanticGateResult> Gates,
@@ -473,13 +466,7 @@ internal sealed record SemanticGrade(
     IReadOnlyList<string> Strengths,
     IReadOnlyList<string> Failures,
     IReadOnlyList<string> Recommendations)
-{
-    [JsonIgnore]
-    public int Score => CompositePoints;
-
-    [JsonIgnore]
-    public int MaximumScore => MaximumCompositePoints;
-}
+;
 
 internal sealed record GraderBudget(int TimeoutSeconds, int MaxToolCalls, int MaxTestCommands)
 {
@@ -595,8 +582,8 @@ internal static class SemanticScoring
     {
         if (string.IsNullOrWhiteSpace(profile.Id) || string.IsNullOrWhiteSpace(profile.Version))
             throw new HarnessException("Review profile identity fields must be populated.");
-        if (profile.SemanticQualityPoints != 100 || profile.CompositePoints != 30)
-            throw new HarnessException("agentic-v2 must define 100 semantic-quality points and a 30-point composite contribution.");
+        if (profile.SemanticQualityPoints != 100)
+            throw new HarnessException("agentic-v2 must define a 100-point semantic-quality scale.");
         if (profile.Levels is null || profile.Levels.Count != 5 ||
             !profile.Levels.Select(x => x.Level).Order().SequenceEqual(Enum.GetValues<SemanticLevel>()))
             throw new HarnessException("Review profile must define all five semantic levels exactly once.");
@@ -720,10 +707,6 @@ internal static class SemanticScoring
             dimension.Id, dimension.Name, dimension.Weight,
             grades.Where(x => string.Equals(x.DimensionId, dimension.Id, StringComparison.Ordinal)).Sum(x => x.EarnedPoints))).ToArray();
         var quality = dimensions.Sum(x => x.EarnedPoints);
-        var composite = (int)Math.Round(
-            quality * profile.Rubric.CompositePoints / profile.Rubric.SemanticQualityPoints,
-            MidpointRounding.AwayFromZero);
-
         var requiredFailures = profile.Rubric.RequiredBehaviorCriterionIds
             .Select(id => grades.Single(x => string.Equals(x.CriterionId, id, StringComparison.Ordinal)))
             .Where(x => x.Level < SemanticLevel.Strong)
@@ -739,8 +722,7 @@ internal static class SemanticScoring
                 "High-severity semantic findings: " + string.Join(", ", highFindings.Select(x => x.Id)) + ".");
 
         return new(
-            profile.Rubric.Id, profile.Hash, quality, profile.Rubric.SemanticQualityPoints,
-            composite, profile.Rubric.CompositePoints, dimensions, grades,
+            profile.Rubric.Id, profile.Hash, quality, profile.Rubric.SemanticQualityPoints, dimensions, grades,
             [requiredBehavior, noCritical], input.Findings.ToArray(), input.CoverageReceipt,
             input.Summary, input.Strengths.ToArray(), input.Failures.ToArray(), input.Recommendations.ToArray());
     }
@@ -972,7 +954,7 @@ internal static class SemanticGradePersistence
         var quality = legacy.MaximumScore == 0 ? 0 : legacy.Score * 100m / legacy.MaximumScore;
         var high = legacy.Findings.Any(x => x.Severity == SemanticFindingSeverity.High);
         return new(
-            legacy.RubricProfileId, legacy.RubricProfileHash, quality, 100, legacy.Score, legacy.MaximumScore,
+            legacy.RubricProfileId, legacy.RubricProfileHash, quality, 100,
             [new("legacy", "Agentic v1", 100, quality)], criteria,
             [new("requiredBehaviorComplete", true, "Not present in agentic-v1 artifacts."),
              new("noCriticalSemanticFinding", !high, high ? "A high-severity v1 finding was present." : "No high-severity v1 finding was present.")],

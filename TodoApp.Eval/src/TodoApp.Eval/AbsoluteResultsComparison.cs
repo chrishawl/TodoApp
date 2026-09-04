@@ -45,8 +45,8 @@ internal static class AbsoluteResultsComparison
 
             No additional judge was invoked. {descriptive}
 
-            | Implementation model / effort | Samples | Semantic-quality mean | Range | Composite semantic mean |
-            | --- | ---: | ---: | ---: | ---: |
+            | Implementation model / effort | Samples | Semantic-quality mean | Range |
+            | --- | ---: | ---: | ---: |
             {string.Join(Environment.NewLine, rows)}
 
             ## Per-dimension semantic scores
@@ -84,8 +84,7 @@ internal static class AbsoluteResultsComparison
     private static string GroupRow(IGrouping<ImplementationConfiguration, ComparableRun> group)
     {
         var quality = group.Select(x => x.Grade.QualityScore).ToArray();
-        var composite = group.Select(x => x.Grade.CompositePoints).ToArray();
-        return $"| `{group.Key.Provider}/{group.Key.Model}/{group.Key.Effort}` | {quality.Length} | {Mean(quality):F1} | {quality.Min():F1}–{quality.Max():F1} | {Mean(composite.Select(x => (decimal)x)):F1} |";
+        return $"| `{group.Key.Provider}/{group.Key.Model}/{group.Key.Effort}` | {quality.Length} | {Mean(quality):F1} | {quality.Min():F1}–{quality.Max():F1} |";
     }
 
     private static string DimensionSection(

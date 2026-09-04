@@ -95,7 +95,7 @@ Container runs deliberately exclude host skills, configuration, and plugins. Cur
 
 ## Semantic rubric and calibration
 
-`review-profiles/agentic-v2/rubric.json` is the single source for six dimensions, 19 criterion IDs and weights, all five observable anchors, required-behavior criteria, and evidence requirements. The evaluator compiles both the grader prompt contract and strict output schema from that file. The model supplies levels and evidence but never returns weights or totals. The scoring module validates evidence, applies high/medium/low caps of 0/2/3, calculates semantic quality out of 100, converts it to the existing 30-point composite contribution, and evaluates `requiredBehaviorComplete` and `noCriticalSemanticFinding`. Passing requires both semantic gates as well as every deterministic gate.
+`review-profiles/agentic-v2/rubric.json` is the single source for six dimensions, 19 criterion IDs and weights, all five observable anchors, required-behavior criteria, and evidence requirements. The evaluator compiles both the grader prompt contract and strict output schema from that file. The model supplies levels and evidence but never returns weights or totals. The scoring module validates evidence, applies high/medium/low caps of 0/2/3, calculates semantic quality out of 100, and evaluates `requiredBehaviorComplete` and `noCriticalSemanticFinding`. Semantic quality is reported independently and is not converted into a composite score. Passing requires both semantic gates as well as every deterministic gate.
 
 `review-profiles/agentic-v1` and its artifact reader are retained for auditability of historical runs.
 
