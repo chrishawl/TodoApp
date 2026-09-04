@@ -43,7 +43,8 @@ internal static class OptionParser
             TimeSpan.FromMinutes(int.TryParse(v.GetValueOrDefault("timeout-minutes"), out var timeout) ? timeout : 30),
             v.ContainsKey("cleanup"), v.GetValueOrDefault("run-id"), v.GetValueOrDefault("fake-script"), isolation,
             v.GetValueOrDefault("agent-image") ?? "todoapp-eval-agent:local",
-            v.GetValueOrDefault("evaluator-image") ?? "todoapp-eval-evaluator:local", auth);
+            v.GetValueOrDefault("evaluator-image") ?? "todoapp-eval-evaluator:local", auth,
+            v.GetValueOrDefault("review-profile") ?? "agentic-v2");
     }
 
     private static IsolationKind ParseIsolation(string? value, CliProvider provider)
@@ -78,7 +79,8 @@ internal static class OptionParser
 
     private static void RejectLegacyJudgeOptions(IReadOnlyDictionary<string, string?> values)
     {
-        var obsolete = values.Keys.FirstOrDefault(key => key.StartsWith("review-", StringComparison.OrdinalIgnoreCase) ||
+        var obsolete = values.Keys.FirstOrDefault(key =>
+            (key.StartsWith("review-", StringComparison.OrdinalIgnoreCase) && !key.Equals("review-profile", StringComparison.OrdinalIgnoreCase)) ||
             key.Equals("grader-cli", StringComparison.OrdinalIgnoreCase) ||
             key.Equals("grader-executable", StringComparison.OrdinalIgnoreCase));
         if (obsolete is not null)

@@ -10,6 +10,7 @@ internal static class Scoring
         {
             ["agentExit"] = agentSucceeded
         };
+        foreach (var semanticGate in semantic.Gates) gates[semanticGate.Id] = semanticGate.Passed;
         var acceptance =
             Points(deterministic, "authenticationIsolation", 15) +
             Points(deterministic, "filtering", 12) +
@@ -27,17 +28,22 @@ internal static class Scoring
             Gate(deterministic, "noSecrets") && Gate(deterministic, "diffCheck")) engineering += 4;
 
         var status = gates.Values.All(x => x) ? "PASS" : "FAIL";
-        var gateFailures = gates.Where(x => !x.Value).Select(x => $"Hard gate failed: {x.Key}.");
+        var semanticGateIds = semantic.Gates.Select(x => x.Id).ToHashSet(StringComparer.Ordinal);
+        var gateFailures = gates.Where(x => !x.Value && !semanticGateIds.Contains(x.Key))
+            .Select(x => $"Hard gate failed: {x.Key}.");
         return new(
             status,
-            acceptance + engineering + semantic.Score,
+            acceptance + engineering + semantic.CompositePoints,
             acceptance,
             engineering,
-            semantic.Score,
+            semantic.CompositePoints,
             gates,
             semantic.Summary,
             semantic.Strengths,
-            semantic.Failures.Concat(gateFailures).Distinct(StringComparer.Ordinal).ToArray(),
+            semantic.Failures
+                .Concat(semantic.Gates.Where(x => !x.Passed).Select(x => $"Semantic gate failed: {x.Id}. {x.Reason}"))
+                .Concat(gateFailures)
+                .Distinct(StringComparer.Ordinal).ToArray(),
             semantic.Recommendations);
     }
 
@@ -63,13 +69,16 @@ internal static class ReportWriter
         var agentRows = roleTelemetry.Select(x => AgentRow(x.Role, x.Telemetry)).ToList();
         if (telemetry.Aggregate is not null) agentRows.Add(AggregateRow(telemetry.Aggregate));
         var skillRows = roleTelemetry.Select(x => SkillRow(x.Role, x.Telemetry));
+        var dimensionRows = semantic.Dimensions.Select(DimensionRow);
         var rubricRows = semantic.Criteria.Select(CriterionRow);
+        var semanticGateRows = semantic.Gates.Select(SemanticGateRow);
         var health = manifest.GraderHealth;
         var content = $"""
             # TodoApp evaluation: {manifest.RunId}
 
             **Status:** {grade.Status}  
             **Score:** {grade.Score}/100 (acceptance {grade.AcceptancePoints}/50, engineering {grade.EngineeringPoints}/20, semantic {grade.SemanticPoints}/30)
+            **Semantic quality:** {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore} (contributes {semantic.CompositePoints}/{semantic.MaximumCompositePoints} to the composite)
 
             ## Summary
 
@@ -111,11 +120,25 @@ internal static class ReportWriter
 
             ## Semantic rubric
 
-            | Criterion | Attribute | Verdict | Points | Rationale | Evidence |
-            | --- | --- | --- | ---: | --- | --- |
+            ### Dimension subtotals
+
+            | Dimension | Weight | Earned |
+            | --- | ---: | ---: |
+            {string.Join(Environment.NewLine, dimensionRows)}
+
+            ### Criteria
+
+            | Criterion | Weight | Level | Earned | Rationale | Evidence | Next-level gap |
+            | --- | ---: | --- | ---: | --- | --- | --- |
             {string.Join(Environment.NewLine, rubricRows)}
 
-            Semantic score: {semantic.Score}/{semantic.MaximumScore}, calculated by the evaluator from {semantic.RawPoints}/{semantic.ApplicableRawPoints} applicable raw points.
+            Semantic quality: {semantic.QualityScore.ToString("F1", CultureInfo.InvariantCulture)}/{semantic.MaximumQualityScore}. Composite contribution: {semantic.CompositePoints}/{semantic.MaximumCompositePoints}. The evaluator calculates both values from criterion weights and effective levels.
+
+            ### Semantic gates
+
+            | Gate | Result | Reason |
+            | --- | --- | --- |
+            {string.Join(Environment.NewLine, semanticGateRows)}
 
             ## Findings
 
@@ -141,8 +164,19 @@ internal static class ReportWriter
         File.WriteAllText(path, content);
     }
 
-    private static string CriterionRow(SemanticCriterionGrade criterion) =>
-        $"| `{Cell(criterion.CriterionId)}` | {Cell(criterion.Attribute)} | `{criterion.Verdict.ToString().ToLowerInvariant()}` | {(criterion.Points?.ToString(CultureInfo.InvariantCulture) ?? "n/a")} | {Cell(criterion.Rationale)} | {Cell(string.Join("; ", criterion.Evidence.Select(EvidenceText)))} |";
+    private static string DimensionRow(SemanticDimensionGrade dimension) =>
+        $"| `{Cell(dimension.DimensionId)}` — {Cell(dimension.Name)} | {dimension.Weight} | {dimension.EarnedPoints.ToString("0.##", CultureInfo.InvariantCulture)} |";
+
+    private static string CriterionRow(SemanticCriterionGrade criterion)
+    {
+        var level = criterion.Level == criterion.ReportedLevel
+            ? Level(criterion.Level)
+            : $"{Level(criterion.Level)} (reported {Level(criterion.ReportedLevel)}, capped)";
+        return $"| `{Cell(criterion.CriterionId)}` | {criterion.Weight} | `{level}` | {criterion.EarnedPoints.ToString("0.##", CultureInfo.InvariantCulture)} | {Cell(criterion.Rationale)} | {Cell(string.Join("; ", criterion.Evidence.Select(EvidenceText)))} | {Cell(criterion.NextLevelGap)} |";
+    }
+
+    private static string SemanticGateRow(SemanticGateResult gate) =>
+        $"| `{Cell(gate.Id)}` | `{(gate.Passed ? "PASS" : "FAIL")}` | {Cell(gate.Reason)} |";
 
     private static string FindingLine(SemanticFinding finding) =>
         $"- **{finding.Severity.ToString().ToLowerInvariant()}** `{finding.CriterionId}` at `{finding.File}:{finding.Line}` — " +
@@ -157,6 +191,9 @@ internal static class ReportWriter
     };
 
     private static string Format(double? value) => value is null ? "n/a" : $"{value:F1}%";
+    private static string Level(SemanticLevel value) => value == SemanticLevel.AdequateWithGaps
+        ? "adequate-with-gaps"
+        : value.ToString().ToLowerInvariant();
 
     private static string AgentRow(string role, AgentTelemetry telemetry) =>
         $"| {Cell(role)} | {Cell(telemetry.ConfiguredModel)} | {Cell(telemetry.ReportedModel)} | {Cell(telemetry.ConfiguredReasoningEffort)} | {Cell(telemetry.CliVersion)} | {Number(telemetry.Turns)} | {Number(telemetry.ToolCalls)} | {Number(telemetry.ShellCommands)} | {Number(telemetry.FailedTools)} | {telemetry.WallClockSeconds:F1}s | {Number(telemetry.Tokens.Input)} | {Number(telemetry.Tokens.CachedInput)} | {Number(telemetry.Tokens.Output)} | {Number(telemetry.Tokens.Reasoning)} | {Number(telemetry.Tokens.InputOutput)} |";

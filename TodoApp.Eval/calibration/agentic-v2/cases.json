@@ -1,0 +1,157 @@
+{
+  "id": "generic-agentic-v2",
+  "rubricProfileId": "agentic-v2",
+  "selectedConfiguration": { "model": "gpt-5.6-terra", "reasoningEffort": "high" },
+  "comparisonConfiguration": { "model": "gpt-5.6-sol", "reasoningEffort": "high" },
+  "runsPerFixture": 3,
+  "cases": [
+    {
+      "id": "adequate-correct", "fixture": "generic-v2:adequate-correct-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "adequateWithGaps" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 15 }, "integration": { "minimum": 5, "maximum": 5 }, "design": { "minimum": 10, "maximum": 10 }, "maintainability": { "minimum": 7.5, "maximum": 7.5 }, "tests": { "minimum": 7.5, "maximum": 7.5 }, "operations": { "minimum": 5, "maximum": 5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "strong-correct", "fixture": "generic-v2:strong-correct-v1",
+      "defaultCriterionRange": { "minimum": "strong", "maximum": "strong" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 22.5, "maximum": 22.5 }, "integration": { "minimum": 7.5, "maximum": 7.5 }, "design": { "minimum": 15, "maximum": 15 }, "maintainability": { "minimum": 11.25, "maximum": 11.25 }, "tests": { "minimum": 11.25, "maximum": 11.25 }, "operations": { "minimum": 7.5, "maximum": 7.5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [],
+      "expectedBetterThan": ["adequate-correct", "tight-coupling", "poor-separation", "unnecessary-abstractions", "speculative-extensibility", "poor-change-locality", "production-untestable", "repository-inconsistency", "unclear-invariants", "tautological-tests", "brittle-tests", "nondeterministic-tests", "weak-test-diagnostics", "unicode-contract-defect"]
+    },
+    {
+      "id": "exemplary-correct", "fixture": "generic-v2:exemplary-correct-v1",
+      "defaultCriterionRange": { "minimum": "exemplary", "maximum": "exemplary" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 30, "maximum": 30 }, "integration": { "minimum": 10, "maximum": 10 }, "design": { "minimum": 20, "maximum": 20 }, "maintainability": { "minimum": 15, "maximum": 15 }, "tests": { "minimum": 15, "maximum": 15 }, "operations": { "minimum": 10, "maximum": 10 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": ["strong-correct"]
+    },
+    {
+      "id": "tight-coupling", "fixture": "generic-v2:tight-coupling-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "design.modularity-coupling": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 7, "maximum": 15 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "design.modularity-coupling", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "poor-separation", "fixture": "generic-v2:poor-separation-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "design.responsibility-separation": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 7, "maximum": 15 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "design.responsibility-separation", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "unnecessary-abstractions", "fixture": "generic-v2:unnecessary-abstractions-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "maintainability.proportional-simplicity": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 5, "maximum": 11.25 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "maintainability.proportional-simplicity", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "speculative-extensibility", "fixture": "generic-v2:speculative-extensibility-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "design.change-locality-extensibility": { "minimum": "weak", "maximum": "adequateWithGaps" }, "maintainability.proportional-simplicity": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 8, "maximum": 15 }, "maintainability": { "minimum": 5, "maximum": 11.25 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "design.change-locality-extensibility", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "poor-change-locality", "fixture": "generic-v2:poor-change-locality-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "design.change-locality-extensibility": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 8, "maximum": 15 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "design.change-locality-extensibility", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "production-untestable", "fixture": "generic-v2:production-untestable-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "tests.production-testability": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 5, "maximum": 11.25 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "tests.production-testability", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "repository-inconsistency", "fixture": "generic-v2:repository-inconsistency-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "maintainability.consistency": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 6, "maximum": 11.25 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "maintainability.consistency", "severity": "low" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "unclear-invariants", "fixture": "generic-v2:unclear-invariants-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "maintainability.invariants-and-knowledge": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 6, "maximum": 11.25 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "maintainability.invariants-and-knowledge", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "tautological-tests", "fixture": "generic-v2:tautological-tests-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "tests.behavioral-fault-sensitivity": { "minimum": "failed", "maximum": "weak" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 4, "maximum": 10 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "tests.behavioral-fault-sensitivity", "severity": "high" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "brittle-tests", "fixture": "generic-v2:brittle-tests-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "tests.behavioral-fault-sensitivity": { "minimum": "weak", "maximum": "adequateWithGaps" }, "tests.readability-diagnostics": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 4, "maximum": 10 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "tests.behavioral-fault-sensitivity", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "nondeterministic-tests", "fixture": "generic-v2:nondeterministic-tests-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "tests.determinism-isolation": { "minimum": "failed", "maximum": "weak" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 4, "maximum": 10 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "tests.determinism-isolation", "severity": "high" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "weak-test-diagnostics", "fixture": "generic-v2:weak-test-diagnostics-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "tests.readability-diagnostics": { "minimum": "weak", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 5, "maximum": 11.25 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "tests.readability-diagnostics", "severity": "low" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "semantic-renaming-perturbation", "fixture": "generic-v2:strong-correct-renamed-v1",
+      "defaultCriterionRange": { "minimum": "strong", "maximum": "strong" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 22.5, "maximum": 22.5 }, "integration": { "minimum": 7.5, "maximum": 7.5 }, "design": { "minimum": 15, "maximum": 15 }, "maintainability": { "minimum": 11.25, "maximum": 11.25 }, "tests": { "minimum": 11.25, "maximum": 11.25 }, "operations": { "minimum": 7.5, "maximum": 7.5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": [], "perturbationOf": "strong-correct"
+    },
+    {
+      "id": "formatting-perturbation", "fixture": "generic-v2:strong-correct-formatting-v1",
+      "defaultCriterionRange": { "minimum": "strong", "maximum": "strong" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 22.5, "maximum": 22.5 }, "integration": { "minimum": 7.5, "maximum": 7.5 }, "design": { "minimum": 15, "maximum": 15 }, "maintainability": { "minimum": 11.25, "maximum": 11.25 }, "tests": { "minimum": 11.25, "maximum": 11.25 }, "operations": { "minimum": 7.5, "maximum": 7.5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": [], "perturbationOf": "strong-correct"
+    },
+    {
+      "id": "comment-perturbation", "fixture": "generic-v2:strong-correct-comments-v1",
+      "defaultCriterionRange": { "minimum": "strong", "maximum": "strong" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 22.5, "maximum": 22.5 }, "integration": { "minimum": 7.5, "maximum": 7.5 }, "design": { "minimum": 15, "maximum": 15 }, "maintainability": { "minimum": 11.25, "maximum": 11.25 }, "tests": { "minimum": 11.25, "maximum": 11.25 }, "operations": { "minimum": 7.5, "maximum": 7.5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": [], "perturbationOf": "strong-correct"
+    },
+    {
+      "id": "source-order-perturbation", "fixture": "generic-v2:strong-correct-source-order-v1",
+      "defaultCriterionRange": { "minimum": "strong", "maximum": "strong" }, "criterionRanges": {},
+      "dimensionRanges": { "functional": { "minimum": 22.5, "maximum": 22.5 }, "integration": { "minimum": 7.5, "maximum": 7.5 }, "design": { "minimum": 15, "maximum": 15 }, "maintainability": { "minimum": 11.25, "maximum": 11.25 }, "tests": { "minimum": 11.25, "maximum": 11.25 }, "operations": { "minimum": 7.5, "maximum": 7.5 } },
+      "expectedFindings": [], "forbiddenFindingCriteria": [], "expectedBetterThan": [], "perturbationOf": "strong-correct"
+    },
+    {
+      "id": "unicode-contract-defect", "fixture": "todo-search-v1:unicode-sqlite-casefold-v2",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "functional.contract-completeness": { "minimum": "adequateWithGaps", "maximum": "adequateWithGaps" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 22.5 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 5, "maximum": 10 } },
+      "expectedFindings": [{ "criterionId": "functional.contract-completeness", "severity": "medium" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "missing-implementation", "fixture": "generic-v2:missing-implementation-v1",
+      "defaultCriterionRange": { "minimum": "failed", "maximum": "weak" },
+      "criterionRanges": { "functional.contract-completeness": { "minimum": "failed", "maximum": "failed" }, "integration.real-entry-point": { "minimum": "failed", "maximum": "failed" } },
+      "dimensionRanges": { "functional": { "minimum": 0, "maximum": 7.5 }, "integration": { "minimum": 0, "maximum": 2.5 }, "design": { "minimum": 0, "maximum": 5 }, "maintainability": { "minimum": 0, "maximum": 3.75 }, "tests": { "minimum": 0, "maximum": 3.75 }, "operations": { "minimum": 0, "maximum": 2.5 } },
+      "expectedFindings": [{ "criterionId": "functional.contract-completeness", "severity": "high" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    },
+    {
+      "id": "security-isolation-defect", "fixture": "generic-v2:security-isolation-defect-v1",
+      "defaultCriterionRange": { "minimum": "adequateWithGaps", "maximum": "strong" },
+      "criterionRanges": { "operations.security": { "minimum": "failed", "maximum": "failed" } },
+      "dimensionRanges": { "functional": { "minimum": 15, "maximum": 30 }, "integration": { "minimum": 5, "maximum": 10 }, "design": { "minimum": 10, "maximum": 20 }, "maintainability": { "minimum": 7.5, "maximum": 15 }, "tests": { "minimum": 7.5, "maximum": 15 }, "operations": { "minimum": 2, "maximum": 6 } },
+      "expectedFindings": [{ "criterionId": "operations.security", "severity": "high" }], "forbiddenFindingCriteria": [], "expectedBetterThan": []
+    }
+  ]
+}

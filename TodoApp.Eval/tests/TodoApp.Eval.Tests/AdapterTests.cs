@@ -86,6 +86,19 @@ public sealed class AdapterTests
         Assert.Equal("todoapp-eval-evaluator:local", options.EvaluatorImage);
         Assert.Equal("medium", options.Implementation.ReasoningEffort);
         Assert.Equal(new(CliProvider.Codex, "gpt-5.6-terra", ReasoningEffort: "high"), options.SemanticGrader);
+        Assert.Equal("agentic-v2", options.ReviewProfile);
+    }
+
+    [Fact]
+    public void Review_profile_can_be_selected_explicitly()
+    {
+        var (_, values) = OptionParser.Parse([
+            "run", "--repo", "/tmp/repo", "--base", "HEAD",
+            "--implementation-cli", "codex", "--implementation-model", "gpt-test",
+            "--implementation-reasoning-effort", "high", "--review-profile", "agentic-v2"
+        ]);
+
+        Assert.Equal("agentic-v2", OptionParser.Eval(values).ReviewProfile);
     }
 
     [Theory]

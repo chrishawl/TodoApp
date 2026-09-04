@@ -40,6 +40,14 @@ public sealed class SearchAcceptanceTests
     }
 
     [Fact]
+    public async Task filtering_matches_non_ascii_casing()
+    {
+        await using var app = await Seed("u", new SeedTodo("ÄRGER", false), new SeedTodo("unrelated", false));
+        var result = await Get(app.Authenticated("u"), "/todos/search?q=%C3%A4rger");
+        Assert.Equal(["ÄRGER"], Titles(result));
+    }
+
+    [Fact]
     public async Task filtering_empty_query_is_no_filter_and_completion_supports_both_values()
     {
         await using var app = await Seed("u", new SeedTodo("open", false), new SeedTodo("done", true)); var client = app.Authenticated("u");

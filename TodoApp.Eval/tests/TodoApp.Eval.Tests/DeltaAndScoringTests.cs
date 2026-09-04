@@ -31,6 +31,19 @@ public sealed class DeltaAndScoringTests
     }
 
     [Fact]
+    public void Semantic_gate_failure_overrides_a_perfect_composite_score()
+    {
+        var semantic = SemanticTestData.Grade(gatesPass: false);
+
+        var grade = Scoring.Calculate(Deterministic(true), semantic, true);
+
+        Assert.Equal(100, grade.Score);
+        Assert.Equal("FAIL", grade.Status);
+        Assert.False(grade.HardGates["requiredBehaviorComplete"]);
+        Assert.Contains(grade.Failures, failure => failure.Contains("requiredBehaviorComplete", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Acceptance_groups_recognize_fully_qualified_trx_test_names()
     {
         var path = Path.Combine(Path.GetTempPath(), "todo-eval-trx-" + Guid.NewGuid().ToString("N") + ".trx");

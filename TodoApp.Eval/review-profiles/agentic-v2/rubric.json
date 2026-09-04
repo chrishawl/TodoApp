@@ -1,0 +1,315 @@
+{
+  "id": "agentic-v2",
+  "version": "2.0.0",
+  "semanticQualityPoints": 100,
+  "compositePoints": 30,
+  "levels": [
+    { "level": "failed", "label": "Failed", "meaning": "Missing, contradicted, unreachable, or harmful." },
+    { "level": "weak", "label": "Weak", "meaning": "Substantial deficiencies requiring significant rework." },
+    { "level": "adequateWithGaps", "label": "Adequate with gaps", "meaning": "Useful implementation, but with a material limitation." },
+    { "level": "strong", "label": "Strong", "meaning": "Fully meets the expected production standard." },
+    { "level": "exemplary", "label": "Exemplary", "meaning": "Affirmatively evidenced quality beyond normal correctness." }
+  ],
+  "dimensions": [
+    {
+      "id": "functional",
+      "name": "Functional behavior",
+      "weight": 30,
+      "criteria": [
+        {
+          "id": "functional.contract-completeness",
+          "name": "Contract completeness",
+          "weight": 20,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "A material requested behavior is missing, contradicted, unreachable, or demonstrably incorrect." },
+            { "level": "weak", "observableAnchor": "Only a narrow happy path works; multiple material contract obligations are absent or incorrect." },
+            { "level": "adequateWithGaps", "observableAnchor": "The primary behavior is useful, but at least one material contract obligation remains limited or incorrect." },
+            { "level": "strong", "observableAnchor": "All stated behavior is affirmatively traceable through the implementation and behaves correctly in realistic use." },
+            { "level": "exemplary", "observableAnchor": "Beyond complete behavior, evidence demonstrates deliberate handling of subtle contract interactions or adversarial cases not implied by passing checks alone." }
+          ]
+        },
+        {
+          "id": "functional.boundaries-and-errors",
+          "name": "Boundaries and errors",
+          "weight": 10,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Required boundary, invalid-input, or failure behavior is absent, harmful, or violates the task contract." },
+            { "level": "weak", "observableAnchor": "Common boundaries or failures are handled inconsistently and require substantial correction." },
+            { "level": "adequateWithGaps", "observableAnchor": "Normal failures are useful, but a realistic material boundary or negative case is mishandled." },
+            { "level": "strong", "observableAnchor": "Relevant input boundaries, empty states, and failure paths consistently preserve the requested observable contract." },
+            { "level": "exemplary", "observableAnchor": "Evidence covers subtle interacting boundaries and shows failure behavior remains precise, safe, and diagnosable under adversarial conditions." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "integration",
+      "name": "Integration and change discipline",
+      "weight": 10,
+      "criteria": [
+        {
+          "id": "integration.real-entry-point",
+          "name": "Real entry point",
+          "weight": 6,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "The behavior is disconnected from the real production entry point or bypasses required pipeline behavior." },
+            { "level": "weak", "observableAnchor": "Integration exists only partially or depends on a non-production path, leaving major pipeline obligations uncertain." },
+            { "level": "adequateWithGaps", "observableAnchor": "The real entry point reaches the feature, but a material integration concern or caller path is not preserved." },
+            { "level": "strong", "observableAnchor": "The production entry point, callers, binding, policy, and downstream flow reach the behavior consistently." },
+            { "level": "exemplary", "observableAnchor": "Traceable evidence establishes the complete integration path and deliberately guards an easy-to-miss pipeline or alternate-caller interaction." }
+          ]
+        },
+        {
+          "id": "integration.scope-discipline",
+          "name": "Scope discipline",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "The change violates an explicit constraint or introduces harmful unrelated behavior." },
+            { "level": "weak", "observableAnchor": "Substantial unrelated churn or avoidable dependency and contract changes obscure the requested work." },
+            { "level": "adequateWithGaps", "observableAnchor": "The task is delivered, but contains a material avoidable scope expansion or misses a stated change constraint." },
+            { "level": "strong", "observableAnchor": "The patch is focused, preserves unrelated behavior, and honours explicit dependency, migration, and compatibility constraints." },
+            { "level": "exemplary", "observableAnchor": "The change is exceptionally focused and includes affirmative evidence that fragile adjacent behavior and explicit constraints remain intact." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "name": "Architecture and design",
+      "weight": 20,
+      "criteria": [
+        {
+          "id": "design.responsibility-separation",
+          "name": "Responsibility separation",
+          "weight": 7,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Core responsibilities are misplaced or entangled so behavior is unsafe or cannot be reasoned about." },
+            { "level": "weak", "observableAnchor": "Multiple responsibilities are substantially mixed and important decisions are duplicated or hidden." },
+            { "level": "adequateWithGaps", "observableAnchor": "The design is workable, but one material responsibility sits in the wrong place or leaks across modules." },
+            { "level": "strong", "observableAnchor": "Responsibilities align with repository seams and each important decision has a clear, appropriate owner." },
+            { "level": "exemplary", "observableAnchor": "The design measurably deepens an existing seam or clarifies ownership while retaining a small interface and direct traceability." }
+          ]
+        },
+        {
+          "id": "design.modularity-coupling",
+          "name": "Modularity and coupling",
+          "weight": 7,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Tight or cyclic coupling makes the requested behavior harmful, unreachable, or impractical to verify." },
+            { "level": "weak", "observableAnchor": "Callers must coordinate substantial internal knowledge or broad changes to use the behavior correctly." },
+            { "level": "adequateWithGaps", "observableAnchor": "The feature works, but a material dependency or interface leaks implementation knowledge into callers." },
+            { "level": "strong", "observableAnchor": "Dependencies are contained behind appropriate existing seams and callers learn only what they need." },
+            { "level": "exemplary", "observableAnchor": "Evidence shows unusually high leverage from a small interface across multiple real callers or verification paths without speculative indirection." }
+          ]
+        },
+        {
+          "id": "design.change-locality-extensibility",
+          "name": "Change locality and extensibility",
+          "weight": 6,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "A routine correction would require unsafe, scattered changes or the implementation blocks foreseeable required behavior." },
+            { "level": "weak", "observableAnchor": "Relevant knowledge is spread across many sites and significant rework is needed for nearby contract changes." },
+            { "level": "adequateWithGaps", "observableAnchor": "Current behavior is maintainable, but one realistic nearby change would cross avoidable seams or duplicate knowledge." },
+            { "level": "strong", "observableAnchor": "Task-relevant knowledge is local and foreseeable contract changes can be made in the expected few places." },
+            { "level": "exemplary", "observableAnchor": "A concrete nearby change is demonstrably localized by the design without adding unused extension points or abstractions." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "maintainability",
+      "name": "Simplicity and maintainability",
+      "weight": 15,
+      "criteria": [
+        {
+          "id": "maintainability.proportional-simplicity",
+          "name": "Proportional simplicity",
+          "weight": 6,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Unnecessary complexity materially obscures behavior or creates correctness risk." },
+            { "level": "weak", "observableAnchor": "The solution adds substantial ceremony, duplication, or speculative machinery relative to the task." },
+            { "level": "adequateWithGaps", "observableAnchor": "The solution is understandable, but contains a material avoidable abstraction or convoluted flow." },
+            { "level": "strong", "observableAnchor": "The implementation is the simplest sufficient design for the repository and task constraints." },
+            { "level": "exemplary", "observableAnchor": "The solution removes or consolidates existing incidental complexity while making the requested behavior more direct." }
+          ]
+        },
+        {
+          "id": "maintainability.clarity",
+          "name": "Clarity",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Names or control flow materially misrepresent behavior or make safe review impractical." },
+            { "level": "weak", "observableAnchor": "A maintainer must repeatedly reconstruct intent because names, structure, or data flow are substantially unclear." },
+            { "level": "adequateWithGaps", "observableAnchor": "Most intent is visible, but a material decision or flow remains needlessly difficult to reconstruct." },
+            { "level": "strong", "observableAnchor": "Names, structure, and control/data flow reveal the implementation's intent without explanatory noise." },
+            { "level": "exemplary", "observableAnchor": "The patch makes previously obscure task-relevant behavior self-evident through structure and precise naming." }
+          ]
+        },
+        {
+          "id": "maintainability.consistency",
+          "name": "Repository consistency",
+          "weight": 2,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "The change conflicts with essential repository conventions and causes incorrect or unreachable behavior." },
+            { "level": "weak", "observableAnchor": "The implementation repeatedly ignores established local patterns without a task-driven reason." },
+            { "level": "adequateWithGaps", "observableAnchor": "The change generally fits, but one material convention mismatch increases maintenance or integration cost." },
+            { "level": "strong", "observableAnchor": "The implementation follows relevant local code, error, naming, and test conventions." },
+            { "level": "exemplary", "observableAnchor": "The change strengthens a demonstrably inconsistent local pattern while preserving compatibility and task focus." }
+          ]
+        },
+        {
+          "id": "maintainability.invariants-and-knowledge",
+          "name": "Invariants and knowledge",
+          "weight": 3,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "A critical invariant is absent, contradicted, or duplicated inconsistently." },
+            { "level": "weak", "observableAnchor": "Important rules are implicit or scattered enough that significant rework is needed to modify safely." },
+            { "level": "adequateWithGaps", "observableAnchor": "Most rules are discoverable, but one material invariant or error rule is unclear or duplicated." },
+            { "level": "strong", "observableAnchor": "Relevant invariants, domain knowledge, and error rules have a clear source and are enforced consistently." },
+            { "level": "exemplary", "observableAnchor": "The change explicitly consolidates a subtle existing invariant and protects it with observable verification." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tests",
+      "name": "Testability and test quality",
+      "weight": 15,
+      "criteria": [
+        {
+          "id": "tests.production-testability",
+          "name": "Production testability",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "The production design makes the required behavior effectively untestable through a meaningful interface." },
+            { "level": "weak", "observableAnchor": "Verification depends on extensive internal knowledge, global state, or impractical setup requiring significant redesign." },
+            { "level": "adequateWithGaps", "observableAnchor": "Primary behavior can be tested, but a material production path remains awkward or coupled to internals." },
+            { "level": "strong", "observableAnchor": "The production seam supports direct behavioral verification with proportionate setup and no internal-state assertions." },
+            { "level": "exemplary", "observableAnchor": "The change improves a real production seam so several important behaviors become simpler to verify without expanding its caller-facing interface." }
+          ]
+        },
+        {
+          "id": "tests.behavioral-fault-sensitivity",
+          "name": "Behavioral fault sensitivity",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Tests are absent, tautological, or would pass when the requested behavior is materially broken." },
+            { "level": "weak", "observableAnchor": "Tests assert mostly implementation details or weak existence checks and miss obvious plausible faults." },
+            { "level": "adequateWithGaps", "observableAnchor": "Tests catch primary regressions, but a material plausible implementation fault would still survive." },
+            { "level": "strong", "observableAnchor": "Tests assert observable behavior and would fail for the important realistic faults implied by the task." },
+            { "level": "exemplary", "observableAnchor": "Evidence includes carefully chosen contrast cases that distinguish subtly wrong implementations from correct ones." }
+          ]
+        },
+        {
+          "id": "tests.boundary-negative-coverage",
+          "name": "Boundary and negative coverage",
+          "weight": 3,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Required invalid, empty, authorization, or boundary behavior is untested and demonstrably unsafe or wrong." },
+            { "level": "weak", "observableAnchor": "Only happy paths are covered despite several material negative or boundary obligations." },
+            { "level": "adequateWithGaps", "observableAnchor": "Common negative cases are covered, but one material boundary or interaction remains unprotected." },
+            { "level": "strong", "observableAnchor": "Tests cover relevant valid edges, invalid inputs, empty outcomes, and interacting filters or policies." },
+            { "level": "exemplary", "observableAnchor": "Tests add adversarial or combinatorial boundaries that expose a non-obvious realistic defect class." }
+          ]
+        },
+        {
+          "id": "tests.determinism-isolation",
+          "name": "Determinism and isolation",
+          "weight": 2,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Tests rely on uncontrolled time, order, shared state, network, or randomness and cannot provide dependable feedback." },
+            { "level": "weak", "observableAnchor": "Several tests have brittle ordering or shared-state dependencies likely to create false results." },
+            { "level": "adequateWithGaps", "observableAnchor": "Tests are mostly repeatable, but one material source of flakiness or cross-test coupling remains." },
+            { "level": "strong", "observableAnchor": "Tests control relevant state and ordering and run independently with repeatable results." },
+            { "level": "exemplary", "observableAnchor": "The change removes an existing concrete source of nondeterminism while preserving realistic behavioral coverage." }
+          ]
+        },
+        {
+          "id": "tests.readability-diagnostics",
+          "name": "Readability and diagnostics",
+          "weight": 2,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "Failures do not identify the broken behavior or test structure materially obscures what is asserted." },
+            { "level": "weak", "observableAnchor": "Dense setup, broad assertions, or poor naming makes failures difficult to localize." },
+            { "level": "adequateWithGaps", "observableAnchor": "Tests are understandable, but a material failure would produce ambiguous or brittle diagnostics." },
+            { "level": "strong", "observableAnchor": "Test names, arrangement, and focused assertions make behavioral failures easy to interpret." },
+            { "level": "exemplary", "observableAnchor": "Purpose-built helpers or assertions materially improve diagnostics across multiple real cases without hiding behavior." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "name": "Operational quality",
+      "weight": 10,
+      "criteria": [
+        {
+          "id": "operations.reliability",
+          "name": "Reliability",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "A realistic runtime state causes data loss, crash, corruption, or persistent incorrect behavior." },
+            { "level": "weak", "observableAnchor": "Common failure, cancellation, concurrency, or resource states are handled unsafely and need significant rework." },
+            { "level": "adequateWithGaps", "observableAnchor": "Normal operation is sound, but one material realistic runtime failure or edge state is unsafe." },
+            { "level": "strong", "observableAnchor": "Relevant failure, cancellation, concurrency, overflow, and resource states are handled proportionately and safely." },
+            { "level": "exemplary", "observableAnchor": "Evidence demonstrates resilience under a subtle realistic failure mode beyond ordinary correctness expectations." }
+          ]
+        },
+        {
+          "id": "operations.security",
+          "name": "Security",
+          "weight": 4,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "A reachable path exposes protected data or bypasses required authentication, authorization, validation, or secret handling." },
+            { "level": "weak", "observableAnchor": "Multiple security controls are absent, inconsistently applied, or depend on unsafe caller behavior." },
+            { "level": "adequateWithGaps", "observableAnchor": "Primary controls are preserved, but one material reachable path or data boundary remains insufficiently protected." },
+            { "level": "strong", "observableAnchor": "Relevant identity, authorization, validation, data isolation, and sensitive-data controls hold across reachable paths." },
+            { "level": "exemplary", "observableAnchor": "Affirmative adversarial evidence protects a subtle privilege, isolation, or injection path beyond normal happy-path checks." }
+          ]
+        },
+        {
+          "id": "operations.performance",
+          "name": "Performance",
+          "weight": 2,
+          "anchors": [
+            { "level": "failed", "observableAnchor": "The implementation is unbounded or performs work in a way that is predictably harmful at realistic scale." },
+            { "level": "weak", "observableAnchor": "Avoidable materialization, repeated work, or round trips create substantial scalability risk." },
+            { "level": "adequateWithGaps", "observableAnchor": "Typical use is acceptable, but one material path does avoidable work or scales poorly." },
+            { "level": "strong", "observableAnchor": "Work is bounded, performed in the appropriate layer, and avoids material unnecessary round trips or allocation." },
+            { "level": "exemplary", "observableAnchor": "Measured or structurally conclusive evidence demonstrates a meaningful task-relevant efficiency improvement beyond expected bounded execution." }
+          ]
+        }
+      ]
+    }
+  ],
+  "evidenceRequirements": {
+    "requireCriterionEvidence": true,
+    "requireFindingEvidence": true,
+    "minimumInspectedFiles": 1,
+    "requireAllChangedFilesInspected": true,
+    "allowedEvidenceKinds": ["source", "command", "mechanical"],
+    "mechanicalSignals": [
+      "implementationSucceeded",
+      "buildPassed",
+      "existingTests",
+      "formatPassed",
+      "noNewAnalyzerDiagnostics",
+      "noNewFormatViolations",
+      "noNewVulnerabilities",
+      "coverage",
+      "diff.changedFiles",
+      "diff.churn",
+      "diff.hasProductionPatch",
+      "diff.hasSubmittedTests",
+      "diff.diffCheckPassed",
+      "diff.noPackageOrBuildChanges",
+      "diff.noMigrations",
+      "diff.noBinaries",
+      "diff.noSecrets"
+    ]
+  },
+  "requiredBehaviorCriterionIds": [
+    "functional.contract-completeness",
+    "functional.boundaries-and-errors"
+  ]
+}

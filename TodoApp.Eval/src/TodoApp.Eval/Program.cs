@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace TodoApp.Eval;
 
 internal static class Program
@@ -13,6 +16,7 @@ internal static class Program
                 "run" => await Run(OptionParser.Eval(values)),
                 "baseline" => await Baseline(OptionParser.Eval(values)),
                 "report" => Report(values),
+                "compare" or "compare-results" => CompareResults(values),
                 "calibration-check" => CalibrationCheck(values),
                 "help" => Help(),
                 _ => throw new HarnessException($"Unknown command '{command}'.")
@@ -36,8 +40,10 @@ internal static class Program
         var started = DateTimeOffset.UtcNow;
         var runId = options.RunId ?? $"{started:yyyyMMdd-HHmmss}-{options.Implementation.Provider.ToString().ToLowerInvariant()}";
         ValidateRunId(runId);
-        var reviewProfile = ReviewProfile.Load(AppContext.BaseDirectory, "agentic-v1");
-        var graderBudget = GraderBudget.AgenticV1;
+        var reviewProfile = ReviewProfile.Load(AppContext.BaseDirectory, options.ReviewProfile);
+        if (reviewProfile.IsLegacy)
+            throw new HarnessException("agentic-v1 is retained for historical artifact reading; select agentic-v2 for new runs.");
+        var graderBudget = GraderBudget.AgenticV2;
         var resultRoot = Path.Combine(options.OutputRoot, runId);
         if (Directory.Exists(resultRoot)) throw new HarnessException($"Result directory already exists and will not be overwritten: {resultRoot}");
         Directory.CreateDirectory(resultRoot);
@@ -51,7 +57,7 @@ internal static class Program
         var manifest = new RunManifest(runId, options.Repository, options.BaseCommit, resolved, worktreePath, resultRoot, sdk,
             options.Implementation, options.SemanticGrader, reviewProfile.Rubric.Id, reviewProfile.Hash, graderBudget,
             started, null, options.Cleanup,
-            Isolation: options.Isolation, Container: runtime.Container);
+            Isolation: options.Isolation, Container: runtime.Container, TaskHash: TaskHash());
         Json.Write(Path.Combine(resultRoot, "manifest.json"), manifest);
         File.WriteAllText(Path.Combine(resultRoot, "task.md"), TaskDefinition.PublicTask);
 
@@ -203,7 +209,7 @@ internal static class Program
         var results = values.GetValueOrDefault("results")
             ?? throw new HarnessException("calibration-check requires --results <directory>.");
         var packPath = values.GetValueOrDefault("pack")
-            ?? Path.Combine(AppContext.BaseDirectory, "calibration", "agentic-v1", "cases.json");
+            ?? Path.Combine(AppContext.BaseDirectory, "calibration", "agentic-v2", "cases.json");
         var pack = CalibrationPack.Load(Path.GetFullPath(packPath));
         var profile = ReviewProfile.Load(AppContext.BaseDirectory, pack.RubricProfileId);
         pack.ValidateAgainst(profile);
@@ -222,10 +228,19 @@ internal static class Program
         return 1;
     }
 
+    private static int CompareResults(Dictionary<string, string?> values)
+    {
+        var results = values.GetValueOrDefault("results")
+            ?? throw new HarnessException("compare-results requires --results <directory>.");
+        Console.WriteLine(AbsoluteResultsComparison.Create(Path.GetFullPath(results)));
+        return 0;
+    }
+
     private static void Validate(EvalOptions options)
     {
         if (!Directory.Exists(options.Repository) || !Directory.Exists(Path.Combine(options.Repository, ".git"))) throw new HarnessException("--repo must be a Git repository.");
         if (options.Timeout <= TimeSpan.Zero) throw new HarnessException("Timeout must be positive.");
+        if (string.IsNullOrWhiteSpace(options.ReviewProfile)) throw new HarnessException("--review-profile must not be empty.");
         if (options.Implementation.Provider == CliProvider.Codex)
             ReasoningEfforts.Require(options.Implementation.ReasoningEffort, "Implementation");
         if (options.SemanticGrader is not { Provider: CliProvider.Codex } ||
@@ -246,15 +261,19 @@ internal static class Program
             run --repo PATH --base COMMIT --implementation-cli codex --implementation-model MODEL --implementation-reasoning-effort EFFORT [options]
             baseline --repo PATH --base COMMIT --implementation-cli codex --implementation-model MODEL --implementation-reasoning-effort EFFORT [options]
             report --result RUN_DIRECTORY
+            compare-results --results DIRECTORY
             calibration-check --results DIRECTORY [--pack FILE] [--model MODEL --reasoning-effort EFFORT]
 
             Options: --isolation container|host (default container), --agent-image, --evaluator-image, --codex-auth,
                      --output, --worktrees, --implementation-executable,
-                     --timeout-minutes (default 30), --run-id, --cleanup,
+                     --timeout-minutes (default 30), --run-id, --cleanup, --review-profile (default agentic-v2),
                      --grader-model and --grader-reasoning-effort (comparison runs only).
             Codex reasoning effort: none|low|medium|high|xhigh|max. Semantic grading defaults to one gpt-5.6-terra/high call;
             gpt-5.6-sol/high is the only supported comparison configuration.
             Exit codes: 0 pass, 1 candidate failure, 2 harness/configuration failure.
             """); return 0;
     }
+
+    private static string TaskHash() =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(TaskDefinition.PublicTask))).ToLowerInvariant();
 }

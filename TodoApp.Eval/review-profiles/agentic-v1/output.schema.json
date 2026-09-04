@@ -31,7 +31,29 @@
         "file": { "type": ["string", "null"] },
         "line": { "type": ["integer", "null"], "minimum": 1 },
         "command": { "type": ["string", "null"] },
-        "mechanicalSignal": { "type": ["string", "null"] }
+        "mechanicalSignal": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "implementationSucceeded",
+            "buildPassed",
+            "existingTests",
+            "formatPassed",
+            "noNewAnalyzerDiagnostics",
+            "noNewFormatViolations",
+            "noNewVulnerabilities",
+            "coverage",
+            "diff.changedFiles",
+            "diff.churn",
+            "diff.hasProductionPatch",
+            "diff.hasSubmittedTests",
+            "diff.diffCheckPassed",
+            "diff.noPackageOrBuildChanges",
+            "diff.noMigrations",
+            "diff.noBinaries",
+            "diff.noSecrets"
+          ]
+        }
       }
     },
     "criterionVerdict": {
@@ -66,8 +88,19 @@
       "additionalProperties": false,
       "required": ["filesInspected", "pathsInspected"],
       "properties": {
-        "filesInspected": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "pathsInspected": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        "filesInspected": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Repository-relative file paths inspected by the grader.",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "pathsInspected": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "Repository-relative paths to existing files or directories inspected by the grader; never routes, symbols, commands, or prose.",
+          "items": { "type": "string", "minLength": 1 }
+        }
       }
     }
   }

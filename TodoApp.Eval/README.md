@@ -48,11 +48,11 @@ dotnet run --project src/TodoApp.Eval -- run \
   --worktrees ./worktrees
 ```
 
-Container isolation is the default for Codex. The implementation model and reasoning effort (`none`, `low`, `medium`, `high`, `xhigh`, or `max`) are required experiment parameters. Semantic grading makes exactly one Codex `gpt-5.6-terra` call with `high` reasoning and a five-minute budget. `--grader-model gpt-5.6-sol --grader-reasoning-effort high` is retained only for the one-time calibration comparison; other grader configurations are rejected. The implementation timeout defaults to 30 minutes. Use `--cleanup` to remove the completed candidate; otherwise the complete candidate repository remains under `worktrees/<run-id>` for inspection or extraction.
+Container isolation is the default for Codex. The implementation model and reasoning effort (`none`, `low`, `medium`, `high`, `xhigh`, or `max`) are required experiment parameters. Semantic grading defaults to the generic `agentic-v2` review profile and makes exactly one Codex `gpt-5.6-terra` call with `high` reasoning and a five-minute budget. `--review-profile agentic-v2` can pin the profile explicitly. `agentic-v1` remains readable for historical artifacts but cannot be selected for new runs. `--grader-model gpt-5.6-sol --grader-reasoning-effort high` is retained only for the calibration comparison; other grader configurations are rejected. The implementation timeout defaults to 30 minutes. Use `--cleanup` to remove the completed candidate; otherwise the complete candidate repository remains under `worktrees/<run-id>` for inspection or extraction.
 
 `--isolation host` exists for local fake fixtures and compatibility checks. It is not an experiment-grade isolation boundary.
 
-Use `baseline` with the same required options to capture a standalone baseline, and `report --result PATH` to print an existing report. Exit codes are 0 for pass, 1 for candidate failure, and 2 for harness/configuration failure.
+Use `baseline` with the same required options to capture a standalone baseline, and `report --result PATH` to print an existing report. `compare-results --results PATH` summarizes compatible retained runs by implementation model and effort without invoking another judge. It rejects mixtures of task, resolved-base, or profile hashes and labels single-run comparisons as descriptive. Exit codes are 0 for pass, 1 for candidate failure, and 2 for harness/configuration failure.
 
 ## Isolation model
 
@@ -86,7 +86,7 @@ Every completed result directory retains the evaluation signals needed to audit 
 - frozen binary patch and candidate diff inventory;
 - analyzer, format, vulnerability, existing-test, private-test, and coverage outputs;
 - acceptance groups and hard gates;
-- the profile-hashed 15-criterion semantic grade, typed evidence, findings, and coverage receipt;
+- the profile-hashed 19-criterion semantic grade, dimension subtotals, semantic gates, typed evidence, findings, and coverage receipt;
 - the evaluator-calculated grade, report, baseline readiness, grader budget/health, image IDs, resource limits, and isolation settings.
 
 The candidate repository remains the extraction artifact when `--cleanup` is omitted. Generated results never contain `auth.json`.
@@ -95,9 +95,11 @@ Container runs deliberately exclude host skills, configuration, and plugins. Cur
 
 ## Semantic rubric and calibration
 
-`review-profiles/agentic-v1` contains the versioned rubric, stable grader prompt, and strict output schema. The model never returns weights or totals. C# validates criterion completeness and evidence, applies high/medium finding caps, normalizes applicable points to 30, and renders every criterion in the final report.
+`review-profiles/agentic-v2/rubric.json` is the single source for six dimensions, 19 criterion IDs and weights, all five observable anchors, required-behavior criteria, and evidence requirements. The evaluator compiles both the grader prompt contract and strict output schema from that file. The model supplies levels and evidence but never returns weights or totals. The scoring module validates evidence, applies high/medium/low caps of 0/2/3, calculates semantic quality out of 100, converts it to the existing 30-point composite contribution, and evaluates `requiredBehaviorComplete` and `noCriticalSemanticFinding`. Passing requires both semantic gates as well as every deterministic gate.
 
-`calibration/agentic-v1/cases.json` records nine known-answer cases using only `mustFind`, `mustNotFind`, and criterion ceiling/floor assertions. After retaining `semantic-grade.json` and `manifest.json` for each case beneath a results directory, verify a model run with:
+`review-profiles/agentic-v1` and its artifact reader are retained for auditability of historical runs.
+
+`calibration/agentic-v2/cases.json` records human-agreed criterion and dimension ranges, expected findings, nearest-contrast ordering, and semantics-preserving perturbations. Retain three runs beneath `<results>/<case>/run-{1,2,3}/`. Promotion requires complete high-severity detection with no false highs, 90% of levels inside expected ranges, 95% within one adjacent level, same-patch standard deviation no greater than three points, perturbation movement no greater than three points with no pass/fail flip, and 90% preservation of expected absolute ordering. Verify a model run with:
 
 ```sh
 dotnet run --project src/TodoApp.Eval -- calibration-check --results ./calibration-results/terra-high

@@ -53,33 +53,42 @@ public sealed class TelemetryAndReportTests
             var implementationSpec = new AgentSpec(CliProvider.Codex, "implementation", ReasoningEffort: "high");
             var graderSpec = new AgentSpec(CliProvider.Codex, "gpt-5.6-terra", ReasoningEffort: "high");
             var now = DateTimeOffset.UtcNow;
-            var health = GraderHealth.Assess(graderTelemetry, GraderBudget.AgenticV1);
+            var health = GraderHealth.Assess(graderTelemetry, GraderBudget.AgenticV2);
             var manifest = new RunManifest("run-1", "/repo", "base", "resolved", "/worktree", root, "9.0.305",
-                implementationSpec, graderSpec, "agentic-v1", "profile-hash", GraderBudget.AgenticV1,
+                implementationSpec, graderSpec, "agentic-v2", "profile-hash", GraderBudget.AgenticV2,
                 now, now, false, SemanticGraderTelemetry: graderTelemetry, GraderHealth: health);
             var criterion = new SemanticCriterionGrade(
-                "solution.requested-behavior-complete", "solutionIntentAndFunctionalFit", SemanticVerdict.Partial, 1,
-                "Unicode case folding remains incomplete.", [new(EvidenceKind.Source, "source", "source.cs", 1)], ["F-1"]);
+                "functional.contract-completeness", "functional", "Functional behavior", "Contract completeness", 20,
+                SemanticLevel.Strong, SemanticLevel.AdequateWithGaps, 10,
+                "Unicode case folding remains incomplete.", [new(EvidenceKind.Source, "source", "source.cs", 1)], ["F-1"],
+                "Implement unrestricted case-insensitive matching.");
             var finding = new SemanticFinding("F-1", criterion.CriterionId, SemanticFindingSeverity.Medium,
                 "A non-ASCII title is searched with different casing.", "The matching todo is omitted.",
                 "source.cs", 1, [new(EvidenceKind.Source, "source", "source.cs", 1)]);
-            var semantic = new SemanticGrade("agentic-v1", "profile-hash", 29, 30, 29, 30,
-                [criterion], [finding], new(["source.cs"], ["tests"]), "good with one gap", ["direct"], ["unicode gap"], ["add Unicode test"]);
+            var semantic = new SemanticGrade("agentic-v2", "profile-hash", 90, 100, 27, 30,
+                [new("functional", "Functional behavior", 30, 20)], [criterion],
+                [new("requiredBehaviorComplete", false, "functional.contract-completeness is below strong."),
+                 new("noCriticalSemanticFinding", true, "No high-severity finding.")],
+                [finding], new(["source.cs"], ["tests"]), "good with one gap", ["direct"], ["unicode gap"], ["add Unicode test"]);
             var deterministic = Deterministic();
             var grade = Scoring.Calculate(deterministic, semantic, true);
 
             ReportWriter.Write(path, manifest, runTelemetry, deterministic, semantic, grade);
             var report = File.ReadAllText(path);
 
-            Assert.Contains("semantic 29/30", report);
+            Assert.Contains("semantic 27/30", report);
+            Assert.Contains("Semantic quality:** 90.0/100", report);
             Assert.Contains("| Implementation | implementation | n/a | high | codex 1.0 |", report);
             Assert.Contains("| Semantic grader | gpt-5.6-terra | reported-gpt-5.6-terra | high | codex 1.0 |", report);
             Assert.DoesNotContain("Overall grader", report);
             Assert.Contains("| Total | n/a | n/a | n/a | n/a |", report);
             Assert.Contains("| 120 | 25 | 40 | 6 | 160 |", report);
-            Assert.Contains("`agentic-v1` / `profile-hash`", report);
+            Assert.Contains("`agentic-v2` / `profile-hash`", report);
             Assert.Contains("300s, 8 tool calls, 2 focused test commands", report);
             Assert.Contains("Unicode case folding remains incomplete.", report);
+            Assert.Contains("Implement unrestricted case-insensitive matching.", report);
+            Assert.Contains("requiredBehaviorComplete", report);
+            Assert.Contains("functional.contract-completeness is below strong.", report);
             Assert.Contains("unknown—not zero", report);
         }
         finally

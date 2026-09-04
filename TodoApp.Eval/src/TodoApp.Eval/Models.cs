@@ -47,7 +47,8 @@ internal sealed record EvalOptions(
     IsolationKind Isolation = IsolationKind.Container,
     string AgentImage = "todoapp-eval-agent:local",
     string EvaluatorImage = "todoapp-eval-evaluator:local",
-    string CodexAuthFile = "");
+    string CodexAuthFile = "",
+    string ReviewProfile = "agentic-v2");
 
 internal sealed record ProcessSpec(
     string FileName,
@@ -265,7 +266,8 @@ internal sealed record RunManifest(
     AgentTelemetry? SemanticGraderTelemetry = null,
     GraderHealth? GraderHealth = null,
     GraderCostInputs? GraderCostInputs = null,
-    string HarnessVersion = "3.0.0");
+    string HarnessVersion = "4.0.0",
+    string? TaskHash = null);
 
 internal sealed record ContainerEnvironment(
     string AgentImage,
