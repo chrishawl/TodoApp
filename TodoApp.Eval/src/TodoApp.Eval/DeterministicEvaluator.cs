@@ -19,8 +19,7 @@ internal sealed class DeterministicEvaluator(ProcessRunner processes, GitWorkspa
         var checks = new List<CheckResult>();
         var solution = Path.Combine(worktree, "TodoApp.sln");
 
-        var build = await Run("build", Path.Combine(artifactRoot, "build.log"), new("dotnet",
-            ["build", solution, "--no-restore", "--nologo", "-p:EnableNETAnalyzers=true", "-p:AnalysisLevel=latest-recommended", "-p:AnalysisMode=All"], worktree), timeout);
+        var build = await Run("build", Path.Combine(artifactRoot, "build.log"), AnalyzerBuildSpec(worktree, solution), timeout);
         checks.Add(build.Check);
         var diagnostics = ParseDiagnostics(build.Result.Stdout + build.Result.Stderr, worktree);
         Json.Write(Path.Combine(artifactRoot, "analyzers.json"), diagnostics);
@@ -220,6 +219,8 @@ internal sealed class DeterministicEvaluator(ProcessRunner processes, GitWorkspa
     }
 
     internal static string FindingKey(DiagnosticFinding f) => $"{f.Severity}|{f.Rule}|{f.File}|{f.Message}";
+    internal static ProcessSpec AnalyzerBuildSpec(string worktree, string solution) => new("dotnet",
+        ["build", solution, "--no-restore", "--no-incremental", "--nologo", "-p:EnableNETAnalyzers=true", "-p:AnalysisLevel=latest-recommended", "-p:AnalysisMode=All"], worktree);
     internal static string FormatKey(FormatFinding f) => $"{f.File}|{f.Diagnostic}|{f.Message}";
     internal static string VulnerabilityKey(VulnerabilityFinding f) => $"{f.Package}|{f.Version}|{f.Advisory}|{f.Severity}";
     internal static bool IsExistingTestRunClean(CheckResult check, TestSummary summary) =>

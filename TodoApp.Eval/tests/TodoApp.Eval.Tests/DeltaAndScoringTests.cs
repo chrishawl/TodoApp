@@ -12,6 +12,18 @@ public sealed class DeltaAndScoringTests
     }
 
     [Fact]
+    public void Analyzer_build_forces_compilation_after_an_agent_build()
+    {
+        var command = DeterministicEvaluator.AnalyzerBuildSpec("/workspace", "/workspace/TodoApp.sln");
+
+        Assert.Equal("dotnet", command.FileName);
+        Assert.Contains("--no-incremental", command.Arguments);
+        Assert.Contains("-p:EnableNETAnalyzers=true", command.Arguments);
+        Assert.Contains("-p:AnalysisLevel=latest-recommended", command.Arguments);
+        Assert.Contains("-p:AnalysisMode=All", command.Arguments);
+    }
+
+    [Fact]
     public void Hard_gate_takes_precedence_over_semantic_quality()
     {
         var deterministic = Deterministic(allAcceptance: true, failedGate: "noSecrets");

@@ -74,7 +74,7 @@ The agent necessarily has access to its own Codex credential while running. The 
 
 ## Baseline readiness
 
-Before model tokens are spent, the harness restores and evaluates the detached baseline snapshot. Analyzer-enabled build, all 16 expected existing tests, `dotnet format --verify-no-changes`, `git diff --check`, and worktree cleanliness must pass absolutely. An unready baseline writes `baseline-readiness.json` and `harness-error.json` and exits 2.
+Before model tokens are spent, the harness restores and evaluates the detached baseline snapshot. A non-incremental analyzer-enabled build, all 16 expected existing tests, `dotnet format --verify-no-changes`, `git diff --check`, and worktree cleanliness must pass absolutely. An unready baseline writes `baseline-readiness.json` and `harness-error.json` and exits 2.
 
 NuGet auditing is disabled only for the format process so advisories cannot masquerade as formatting failures. The dedicated vulnerability command remains enabled, and package advisories and analyzer diagnostics remain baseline-relative.
 
