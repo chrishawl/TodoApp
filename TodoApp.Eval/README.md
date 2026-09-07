@@ -1,6 +1,10 @@
 # TodoApp.Eval
 
-A baseline-relative evaluation harness for the pinned TodoApp search-and-pagination task. Codex implementation, deterministic evaluation, and one evidence-gathering semantic grader run in isolated Docker containers. The host controller prepares immutable inputs, owns all weights and arithmetic, orchestrates containers, and retains results.
+A baseline-relative evaluation harness for the public `todo-search-v1`
+search-and-pagination task. Codex implementation, deterministic evaluation,
+and one evidence-gathering semantic grader run in isolated Docker containers.
+The host controller prepares immutable inputs, owns all weights and arithmetic,
+orchestrates containers, and retains results.
 
 ## Build and test
 
@@ -13,6 +17,15 @@ dotnet test TodoApp.Eval.sln
 The images pin .NET SDK `9.0.305` and Codex CLI `0.147.0`, including its `codex-code-mode-host` and bundled `rg` companions. Override the Codex release intentionally with `CODEX_VERSION=x.y.z ./scripts/build-containers.sh`. Every run records both image IDs in `manifest.json`.
 
 Normal unit tests use recorded provider fixtures and a local fake Git repository. They do not invoke Docker or consume model tokens.
+
+## Public task
+
+This public release contains `todo-search-v1`. Its pinned application baseline
+is commit `549a3ece7a6c2f5bcf351bf6c5b08132f534ebc9`, and its task metadata is
+recorded in `fixtures/todo-search-v1.json`. The task adds authenticated search
+and pagination without a database migration or a new NuGet dependency. The
+task text and architecture brief are kept in the evaluator source so prior
+evaluation artifacts remain reproducible.
 
 ## Authentication
 
@@ -39,7 +52,7 @@ From this directory:
 
 ```sh
 dotnet run --project src/TodoApp.Eval -- run \
-  --repo /Users/chrishawley/dev/TodoApp \
+  --repo .. \
   --base 549a3ece7a6c2f5bcf351bf6c5b08132f534ebc9 \
   --implementation-cli codex \
   --implementation-model gpt-5.6-terra \

@@ -1,6 +1,6 @@
 ## Todo application with ASP.NET Core
 
-[![CI](https://github.com/davidfowl/TodoApp/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
+[![CI](https://github.com/chrishawl/TodoApp/actions/workflows/ci.yaml/badge.svg)](https://github.com/chrishawl/TodoApp/actions/workflows/ci.yaml)
 
 This is a Todo application that features:
 - [**Todo.Web**](Todo.Web) - An ASP.NET Core hosted Blazor WASM front end application
@@ -32,6 +32,25 @@ The application uses SQLite and entity framework. Aspire is used to bootstrap al
 ### Running the application
 
 To run the application, run the [TodoApp.AppHost](TodoApp.AppHost) project. This uses Aspire to run both the [Todo.Web/Server](Todo.Web/Server) and [Todo.Api](Todo.Api).
+
+## Evaluation framework
+
+[`TodoApp.Eval`](TodoApp.Eval) contains the evaluation harness and the public
+`todo-search-v1` task used to evaluate agents against this application. The
+harness supports deterministic checks, isolated agent runs, and evidence-based
+semantic grading. Its build, test, authentication, isolation, and run
+instructions are documented in [`TodoApp.Eval/README.md`](TodoApp.Eval/README.md).
+
+To run the evaluator's local tests from the repository root:
+
+```sh
+dotnet restore TodoApp.Eval/TodoApp.Eval.sln
+dotnet test TodoApp.Eval/TodoApp.Eval.sln
+```
+
+The evaluator tests use recorded fixtures and do not require Docker or model
+tokens. Running a real evaluation additionally requires Docker and a Codex
+login; follow the evaluator README for setup and the required options.
 
 ## Optional
 
@@ -132,3 +151,12 @@ Learn more about the Auth0 .NET SDK [here](https://github.com/auth0/auth0-aspnet
 
 This app uses OpenTelemetry to collect logs, metrics and spans. You can see this
 using the [Aspire Dashboard](https://aspiredashboard.com/).
+
+## Local secrets and generated data
+
+Do not commit credentials, API keys, OAuth client secrets, access tokens, or
+local database files. Configure provider secrets with environment variables or
+the .NET user-secrets store; examples in this README intentionally use
+placeholders. Evaluator authentication is read from `~/.codex/auth.json` and
+must remain outside the repository. Build outputs, evaluator results, and
+worktrees are ignored by Git.

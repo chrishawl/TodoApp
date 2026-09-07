@@ -17,7 +17,11 @@ For this eval, do not copy any one system whole. Replace the current single sema
 
 Keep every judge role fixed at the same model and effort across implementation-model experiments. A cross-vendor lane can later be an experiment in judge quality, but changing judges while comparing Luna, Terra, and Sol would confound the result.
 
-The current search-and-pagination task should remain unchanged. Parameterize the harness around versioned task definitions and attach an `adversarial-v1` review profile to both the existing task and a larger second task. The best second task for adversarial review is a shared-list collaboration feature: per-list roles, invitations, ownership transfer, optimistic concurrency, and audit events. It creates genuine multi-file work plus authorization, tenant isolation, race, data-integrity, and test-quality failure modes.
+The current search-and-pagination task should remain unchanged. Parameterize
+the harness around versioned task definitions and keep review profiles,
+deterministic gates, and task assets independently versioned. Any future task
+must be specified and validated separately rather than changing the contract or
+interpretation of an existing task.
 
 ## What the current harness does
 
@@ -37,7 +41,7 @@ The main weaknesses are correlated judgment and hindsight leakage. One model inv
 
 I independently verified that [`CreateWorkspaceAsync`](../../src/TodoApp.Eval/EvaluationRuntime.cs) currently runs `git archive <commit>` without an allowlisted pathspec and extracts the entire pinned tree into the candidate workspace. The current `todo-search-v1` pin is not leaking the harness because commit `23ce718...` predates `TodoApp.Eval/`; its tree contains neither the evaluator nor agent-control directories. Once the embedded harness and a task catalog are committed and a newer base is pinned, however, this behavior would expose evaluator prompts, task definitions, future tasks, and any committed private-test material to the implementation agent.
 
-Before adding a second task, make workspace export a positive, task-owned allowlist of application paths and root build files. Assert that evaluator, private-test, `.agents`, and `.codex` paths are absent, and record the exported file inventory and hashes in the manifest. Keep private task assets outside the candidate snapshot even though the harness itself lives in this repository. This is a stronger boundary than relying on agents to ignore files they can read.
+Before adding more task packages, make workspace export a positive, task-owned allowlist of application paths and root build files. Assert that evaluator, private-test, `.agents`, and `.codex` paths are absent, and record the exported file inventory and hashes in the manifest. Keep private task assets outside the candidate snapshot even though the harness itself lives in this repository. This is a stronger boundary than relying on agents to ignore files they can read.
 
 ## First-party and primary examples
 
@@ -283,14 +287,14 @@ A versioned task package should own all task-specific values rather than growing
 
 ```text
 tasks/
-  search-pagination-v1/
+  task-v1/
     task.json
     public-task.md
     architecture-brief.md
     review-policy.md
     threat-model.md
     private-tests/
-  shared-lists-v1/
+  another-task-v1/
     ...
 review-profiles/
   structured-single-v1.json
@@ -309,45 +313,13 @@ Important `task.json` fields:
 - review profile ID;
 - resource budgets and expected artifacts.
 
-The existing task should be moved byte-for-byte into `search-pagination-v1` before adding the second task. A run manifest must record content hashes for every task/review input so two results are comparable.
-
-## Best second task for an adversarial panel
-
-### Recommendation: shared lists with roles and concurrency
-
-Add collaboration to the Todo app:
-
-- A list has an owner and members with `viewer` or `editor` roles.
-- Owners can invite, revoke, change roles, transfer ownership, and leave only after transfer.
-- Invitations are single-use, expire, and cannot be accepted by a different principal.
-- Every read and write is scoped to list membership; viewers cannot mutate.
-- Todo mutations use an optimistic concurrency token and return an explicit conflict contract.
-- Membership and ownership changes emit an immutable audit event.
-- Existing private todos remain private and current API behavior remains compatible.
-
-Why it is a strong larger eval:
-
-- It requires domain, persistence, API, validation, authorization, DTO, migration, and test changes.
-- Happy-path tests are insufficient; the difficult behavior lies in cross-user negatives and state transitions.
-- Plausible implementations can compile and pass obvious tests while containing IDOR, confused-deputy, stale-write, single-use-token, and partial-transaction defects.
-- It gives every proposed review lane meaningful work without requiring artificial style rules.
-
-Private test groups could cover:
-
-- cross-user read/write isolation and ID enumeration;
-- owner/editor/viewer permission matrix;
-- invitation expiry, replay, wrong-principal acceptance, and revocation races;
-- ownership invariants under leave/transfer concurrency;
-- optimistic concurrency and no lost update;
-- atomic audit event plus state mutation;
-- legacy endpoint regression and migration safety;
-- submitted-test mutation probes for removed authorization checks and stale-version checks.
-
-Two good alternatives are recurring todos with timezone/DST/idempotent generation, or bulk import with idempotency keys, partial-failure semantics, and transactional outbox delivery. Shared lists are broader and yield the clearest security and concurrency ground truth.
+The existing task should remain byte-for-byte stable as task packaging evolves.
+A run manifest must record content hashes for every task and review input so
+results remain comparable.
 
 ## Benchmark the reviewers before trusting them
 
-Build a small judge benchmark alongside the second task. Finster's known-defect experience shows why this is essential.
+Build a small judge benchmark alongside each task. Finster's known-defect experience shows why this is essential.
 
 Create frozen candidate variants with one known defect each, plus clean controls:
 

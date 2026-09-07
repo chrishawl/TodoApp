@@ -47,6 +47,15 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# Local secrets and application data
+.env
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+.db/
+
 *_i.c
 *_p.c
 *_i.h
